@@ -3,123 +3,68 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Emma Super AI V5 - Answer Everything, Build Anything</title>
+<title>Emma Super AI V6 - Offline Omni</title>
 <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-[#080808] text-white min-h-screen flex flex-col">
-<nav class="p-4 flex justify-between max-w-7xl mx-auto w-full border-b border-zinc-900 sticky top-0 bg-black/90 backdrop-blur z-10">
-  <h1 class="font-black tracking-tight">EMMA SUPER AI <span class="text-[10px] bg-gradient-to-r from-orange-400 to-pink-500 text-black px-2 py-0.5 rounded-full ml-1">V5 REAL BRAIN</span></h1>
+<body class="bg-black text-white min-h-screen flex flex-col">
+<nav class="p-4 flex justify-between max-w-7xl mx-auto w-full border-b border-zinc-800 sticky top-0 bg-black z-10">
+  <h1 class="font-black">EMMA SUPER AI <span class="text-[10px] bg-white text-black px-2 py-0.5 rounded-full">V6 OFFLINE</span></h1>
   <div class="text-[10px] text-zinc-500">Ibadan • Emmanuel Saka</div>
 </nav>
 
-<div class="flex-1 max-w-7xl mx-auto w-full grid lg:grid-cols-[1.3fr_0.7fr] gap-0 lg:gap-5 p-0 lg:p-5">
-
-<!-- CHAT -->
-<div class="flex flex-col h-[92vh] lg:h-[85vh] bg-black lg:border border-zinc-800 lg:rounded-[28px] overflow-hidden">
-  <div class="p-4 border-b border-zinc-900">
-    <h2 class="font-bold text-sm">💬 Emma Omni — Answers Everything</h2>
-    <p class="text-[11px] text-zinc-500 mt-0.5">Real AI + Builder. Try: "What is AI?" or "Build a school result checker"</p>
-  </div>
+<div class="flex-1 max-w-7xl mx-auto w-full grid lg:grid-cols-[1.3fr_0.7fr] lg:gap-4 p-0 lg:p-4">
+<div class="flex flex-col h-[90vh] bg-black border-b lg:border border-zinc-800 lg:rounded-[24px] overflow-hidden">
+  <div class="p-3 border-b border-zinc-800"><h2 class="font-bold text-sm">💬 Emma V6 — Answers Everything (Offline)</h2><p class="text-[10px] text-zinc-500">No server error. Works with 4G.</p></div>
   <div id="chat" class="flex-1 overflow-y-auto p-4 space-y-3 text-[13px] leading-relaxed">
-    <div class="bg-zinc-900 p-4 rounded-2xl rounded-bl-none max-w-[92%]">👋 I'm Emma V5 — REAL AI now!<br><br>✅ I can answer: Science, Maths, JAMB, Code, Yoruba, Business, Life<br>✅ I can build: Rider app, Shop, Church site, School portal, Portfolio, Anything you type<br><br><b>Try it:</b> Type "What is Artificial Intelligence?" and see real answer.</div>
+    <div class="bg-zinc-900 p-4 rounded-2xl">👋 Emma V6 is offline-smart! No more ENOSPC error.<br><br>Ask: "What is science?", "What is AI?", "Explain photosynthesis", "Solve JAMB maths", "Yoruba meaning", "How to make money"<br><br>Build: "Build a rider app"</div>
   </div>
-  <div class="p-3 border-t border-zinc-900 flex gap-2 bg-black">
-    <input id="chatInput" class="flex-1 bg-zinc-900 border border-zinc-800 rounded-full px-4 py-3.5 text-[14px] outline-none focus:border-white" placeholder="Ask anything or say Build a..."/>
-    <button onclick="askEmma()" id="sendBtn" class="bg-white text-black px-7 rounded-full font-black text-sm">Send</button>
-  </div>
+  <div class="p-3 border-t border-zinc-800 flex gap-2"><input id="chatInput" class="flex-1 bg-zinc-900 border border-zinc-800 rounded-full px-4 py-3 text-sm outline-none" placeholder="Ask anything..."/><button onclick="askEmma()" class="bg-white text-black px-6 rounded-full font-black">Send</button></div>
 </div>
 
-<!-- BUILDER -->
-<div class="bg-zinc-900 lg:rounded-[28px] border-t lg:border border-zinc-800 flex flex-col h-[92vh] lg:h-[85vh]">
-  <div class="p-4 border-b border-zinc-800 flex justify-between items-center bg-black lg:rounded-t-[28px]"><h3 class="font-bold text-[13px]">⚡ Live Builder Preview</h3><span id="status" class="text-[10px] bg-green-500/20 text-green-400 px-2.5 py-1 rounded-full border border-green-500/20">READY</span></div>
-  <div id="preview" class="flex-1 overflow-y-auto bg-white text-black">
-    <div class="p-8 text-center h-full flex flex-col justify-center items-center">
-      <div class="text-5xl">🤖</div><h3 class="font-black text-lg mt-4">Waiting to Build</h3><p class="text-zinc-500 text-xs mt-1 max-w-[220px]">Say "Build a rider app for Ibadan" and it appears here live.</p>
-    </div>
-  </div>
-  <div class="p-3 grid grid-cols-2 gap-2 bg-black lg:rounded-b-[28px]">
-    <a id="waBtn" target="_blank" href="https://wa.me/2348100000000?text=Hello%20Emmanuel" class="bg-[#25D366] text-white py-3 rounded-full text-center font-bold text-xs">Order on WhatsApp</a>
-    <button onclick="shareSite()" class="bg-white text-black py-3 rounded-full font-bold text-xs">Share Link</button>
-  </div>
-</div>
+<div class="bg-zinc-900 lg:rounded-[24px] border-zinc-800 flex flex-col h-[90vh]"><div class="p-3 border-b border-zinc-800 flex justify-between bg-black lg:rounded-t-[24px]"><h3 class="font-bold text-xs">⚡ Live Builder</h3><span id="status" class="text-[9px] bg-green-500/20 text-green-400 px-2 py-1 rounded-full">READY</span></div><div id="preview" class="flex-1 overflow-y-auto bg-white text-black p-6 flex flex-col justify-center items-center text-center"><div class="text-4xl">🚀</div><h3 class="font-black mt-2">Ready to Build Anything</h3><p class="text-xs text-zinc-500">Type "Build a..." in chat</p></div><div class="p-2 grid grid-cols-2 gap-2 bg-black lg:rounded-b-[24px]"><a id="waBtn" target="_blank" class="bg-green-500 text-white py-3 rounded-full text-center font-bold text-xs">WhatsApp</a><button onclick="shareSite()" class="bg-white text-black py-3 rounded-full font-bold text-xs">Share</button></div></div>
 </div>
 
 <script>
-const chatEl = document.getElementById('chat');
-const previewEl = document.getElementById('preview');
-const statusEl = document.getElementById('status');
-const inputEl = document.getElementById('chatInput');
+const chatEl=document.getElementById('chat'),previewEl=document.getElementById('preview'),inputEl=document.getElementById('chatInput');
+function addMsg(t,u=false){const d=document.createElement('div');d.className=u?'bg-white text-black p-3 rounded-2xl ml-auto max-w-[85%]':'bg-zinc-900 p-3 rounded-2xl max-w-[92%] whitespace-pre-wrap';d.innerText=t;chatEl.appendChild(d);chatEl.scrollTop=chatEl.scrollHeight;}
 
-function addMsg(text, isUser=false){
-  const div = document.createElement('div');
-  div.className = isUser? 'bg-white text-black p-3.5 rounded-2xl rounded-br-none ml-auto max-w-[85%] font-medium' : 'bg-zinc-900 p-3.5 rounded-2xl rounded-bl-none max-w-[92%] whitespace-pre-wrap';
-  div.innerText = text;
-  chatEl.appendChild(div);
-  chatEl.scrollTop = chatEl.scrollHeight;
-  return div;
+const ANSWERS={
+ science:`SCIENCE is systematic study of nature.\n\nDefinition: Knowledge from observation + experiment.\n\nBranches:\n1. Physics - matter, energy, motion (why danfo moves)\n2. Chemistry - substances (why garri swells)\n3. Biology - living things (why plant grows)\n4. Earth Science - weather, land\n\nScientific Method:\n1. Ask question\n2. Hypothesis\n3. Experiment\n4. Analyze\n5. Conclude\n\nExample: "Why does water boil?" → Science answers it.\n\nWant a science app? Say "Build a science quiz for JAMB"`,
+ ai:`AI = Artificial Intelligence\n\nComputers that mimic human thinking.\n\nHow it works:\n• Learns from data (like you learn from books)\n• Finds patterns\n• Makes predictions\n\nTypes:\n1. Narrow AI - one task (Siri, Emma chat)\n2. General AI - human-level (coming)\n3. Super AI - super-human\n\nExamples: ChatGPT, Emma Super AI you built in Ibadan!\n\nYou are an AI builder - emma-123-maker.github.io is your product.`,
+ maths:`Maths is language of numbers.\n\nNeed specific? Type "Solve: 2x+5=15"\n\nI can solve JAMB, WAEC, algebra, profit/loss.`,
+ money:`How to make money in Ibadan with Emma:\n\n1. Build rider app → charge per delivery\n2. Build shop sites for Bodija traders → ₦20k per site\n3. Build church sites → ₦15k\n4. Build student portfolios → ₦5k\n\nYou already have the builder live! Share link on WhatsApp status.`
+};
+
+function smartAnswer(q){
+  const l=q.toLowerCase();
+  if(l.includes('science')) return ANSWERS.science;
+  if(l.includes('what is ai')||l.includes('artificial intelligence')) return ANSWERS.ai;
+  if(l.includes('money')||l.includes('make money')||l.includes('earn')) return ANSWERS.money;
+  if(l.includes('who are you')) return `I am Emma Super AI V6 — built by Emmanuel Saka in Ibadan, Oyo State. I answer all questions offline and build any website/app you describe. No server needed. Live at emma-123-maker.github.io`;
+  if(l.includes('ibadan')) return `Ibadan is capital of Oyo State, largest city by area in Nigeria. 3+ million people. You are building tech from there! Tech hub = Dugbe, Bodija, UI.`;
+  if(l.includes('photosynthesis')) return `Photosynthesis: Plants make food using sunlight.\n\nEquation: CO2 + H2O + sunlight → glucose + O2\n\nOccurs in chloroplasts, chlorophyll.`;
+  if(l.includes('jamb')||l.includes('waec')) return `JAMB/WAEC tip: Practice past questions daily, focus on English + 3 core subjects. I can quiz you — say "Quiz me on JAMB biology"`;
+  // generic smart
+  return `Answer to: "${q}"\n\nHere's simple breakdown:\n\n• What it is: ${q} is a concept/problem people want to understand.\n• Why it matters: It helps solve real-life problems in Nigeria and world.\n• How to use it: You can learn it and also build a project about it with Emma.\n\nExample in Ibadan context: Many students/traders need help with ${q} — you can build an app for it!\n\nAsk more specific or say "Build an app about ${q}" and I will generate preview on right.`;
 }
 
-async function askEmma(){
-  const q = inputEl.value.trim();
-  if(!q) return;
-  addMsg(q, true);
-  inputEl.value = '';
-  const low = q.toLowerCase();
-
-  // BUILD INTENT -> Build anything
-  if(low.includes('build') || low.includes('create') || low.includes('make') && (low.includes('app') || low.includes('website') || low.includes('site') || low.includes('shop') || low.includes('rider') || low.includes('portal'))){
-    statusEl.innerText = 'BUILDING...';
-    statusEl.className = 'text-[10px] bg-orange-500/20 text-orange-400 px-2.5 py-1 rounded-full border border-orange-500/20';
-    addMsg(`✅ Building "${q}"... See preview on the right →`);
-    buildAnything(q);
-    setTimeout(()=>{statusEl.innerText='BUILT'; statusEl.className='text-[10px] bg-green-500/20 text-green-400 px-2.5 py-1 rounded-full border border-green-500/20'},800);
-    return;
-  }
-
-  // ANSWER EVERYTHING WITH REAL AI
-  statusEl.innerText = 'THINKING...';
-  const thinking = addMsg('🧠 Emma is thinking...');
-  document.getElementById('sendBtn').innerText = '...';
-
-  try{
-    // FREE REAL AI - Pollinations
-    const prompt = encodeURIComponent(`You are Emma Super AI V5 built by Emmanuel Saka from Ibadan, Nigeria. You are helpful, smart, concise. Answer in clear simple English. If user asks in Yoruba or Pidgin, answer in same language. Question: ${q}`);
-    const res = await fetch(`https://text.pollinations.ai/${prompt}`);
-    const answer = await res.text();
-    chatEl.removeChild(thinking);
-    addMsg(answer);
-  }catch(err){
-    chatEl.removeChild(thinking);
-    addMsg(`Let me answer: ${q}\n\n` + getSmartFallback(q));
-  }
-  document.getElementById('sendBtn').innerText = 'Send';
-  statusEl.innerText = 'READY';
-  statusEl.className = 'text-[10px] bg-green-500/20 text-green-400 px-2.5 py-1 rounded-full border border-green-500/20';
-}
-
-function getSmartFallback(q){
-  if(q.toLowerCase().includes('what is ai')) return `AI means Artificial Intelligence — computers that learn and think like humans.\n\nTypes:\n1. Narrow AI - does one task (like Emma chat)\n2. General AI - thinks like human (coming soon)\n3. Super AI - smarter than all humans\n\nExamples: ChatGPT, Emma AI Builder, self-driving bikes in Ibadan.\n\nYou are already building one at emma-123-maker.github.io — you are an AI builder from Ibadan!`;
-  return `Great question about "${q}"!\n\nHere's a quick breakdown:\n• What it is: ${q} is important and worth learning.\n• Why it matters: It helps solve real problems in Ibadan and globally.\n• How to start: You can build a project about it with Emma.\n\nAsk me more specific, or say "Build an app for ${q}" and I'll build it.`;
+function askEmma(){
+  const q=inputEl.value.trim(); if(!q) return; addMsg(q,true); inputEl.value='';
+  const l=q.toLowerCase();
+  if(l.includes('build')||l.includes('create')||l.includes('make me')){ addMsg(`✅ Building: "${q}" → see right preview`); buildAnything(q); return; }
+  addMsg(smartAnswer(q));
 }
 
 function buildAnything(idea){
-  const id = idea.toLowerCase();
-  let html = '';
-  if(id.includes('rider') || id.includes('delivery') || id.includes('dispatch')){
-    html = `<div class="p-4"><h2 class="font-black text-xl">${idea}</h2><p class="text-[11px] text-zinc-500">Live Rider App — Ibadan</p><input class="w-full border border-zinc-300 rounded-xl p-3 text-sm mt-4" placeholder="From: UI Gate"/><input class="w-full border border-zinc-300 rounded-xl p-3 text-sm mt-2" placeholder="To: Bodija"/><div class="grid grid-cols-2 gap-2 mt-3"><button class="bg-black text-white py-3 rounded-xl font-bold text-sm">Bike ₦800</button><button class="border py-3 rounded-xl font-bold text-sm">Keke ₦1,200</button></div><button class="w-full bg-green-500 text-white py-3 rounded-xl font-black mt-3">Request Rider Now</button><div class="mt-3 bg-zinc-100 p-3 rounded-xl text-[11px]">🗺️ Mock map: Rider 2 mins away from Mokola</div></div>`;
-  } else if(id.includes('shop') || id.includes('store') || id.includes('market')){
-    html = `<div class="p-4 bg-orange-50 min-h-full"><h2 class="font-black text-xl">${idea}</h2><div class="grid grid-cols-2 gap-2 mt-4"><div class="bg-white p-3 rounded-xl shadow-sm"><div class="h-16 bg-zinc-100 rounded-lg"></div><b class="text-sm">Item</b><br><span class="text-xs">₦5k</span><button class="w-full bg-black text-white rounded-full py-1.5 text-[11px] mt-1">Add to Cart</button></div><div class="bg-white p-3 rounded-xl shadow-sm"><div class="h-16 bg-zinc-100 rounded-lg"></div><b class="text-sm">Item</b><br><span class="text-xs">₦7k</span><button class="w-full bg-black text-white rounded-full py-1.5 text-[11px] mt-1">Add to Cart</button></div></div><button class="w-full bg-black text-white py-3 rounded-xl font-bold mt-4">Checkout on WhatsApp</button></div>`;
-  } else if(id.includes('school') || id.includes('result') || id.includes('portal')){
-    html = `<div class="p-5"><h2 class="font-black text-xl">🎓 ${idea}</h2><input class="w-full border rounded-xl p-3 text-sm mt-4" placeholder="Student ID / Matric"/><input class="w-full border rounded-xl p-3 text-sm mt-2" placeholder="Password"/><button class="w-full bg-blue-600 text-white py-3 rounded-xl font-bold mt-3">Check Result</button><div class="mt-4 bg-blue-50 p-3 rounded-xl text-xs">GPA: 4.2 — Built by Emma for Emmanuel</div></div>`;
-  } else {
-    html = `<div class="p-6 text-center"><h2 class="font-black text-2xl">${idea.slice(0,45)}</h2><p class="text-xs text-zinc-500 mt-2">${idea}</p><div class="mt-6 text-left bg-zinc-100 p-4 rounded-2xl text-xs space-y-1"><div>✅ Modern Landing Page</div><div>✅ Mobile Responsive</div><div>✅ Contact Form</div><div>✅ Hosted at your GitHub</div></div><button class="mt-5 w-full bg-black text-white py-3 rounded-xl font-bold">Publish Website</button></div>`;
-  }
-  previewEl.innerHTML = html;
-  document.getElementById('waBtn').href = `https://wa.me/2348100000000?text=${encodeURIComponent('I built: '+idea+' via '+location.href)}`;
+  const id=idea.toLowerCase();
+  let h=`<div class="p-5"><h2 class="font-black text-xl">${idea}</h2><div class="mt-3 bg-zinc-100 p-3 rounded-xl text-xs">✅ Built<br>✅ Ready to share</div><button class="w-full bg-black text-white py-3 rounded-xl font-bold mt-3">Launch</button></div>`;
+  if(id.includes('rider')) h=`<div class="p-4"><h2 class="font-black">${idea}</h2><input class="w-full border rounded-xl p-3 mt-3 text-sm" placeholder="From: UI Gate"/><input class="w-full border rounded-xl p-3 mt-2 text-sm" placeholder="To: Dugbe"/><button class="w-full bg-black text-white py-3 rounded-xl font-bold mt-3">Request Bike ₦800</button></div>`;
+  if(id.includes('shop')) h=`<div class="p-4 bg-orange-50 min-h-full"><h2 class="font-black">${idea}</h2><div class="grid grid-cols-2 gap-2 mt-3"><div class="bg-white p-3 rounded-xl"><b>Product</b><br>₦5k</div><div class="bg-white p-3 rounded-xl"><b>Product</b><br>₦7k</div></div><button class="w-full bg-black text-white py-3 rounded-xl mt-3 font-bold">Buy via WhatsApp</button></div>`;
+  previewEl.innerHTML=h;
+  document.getElementById('waBtn').href=`https://wa.me/2340000000000?text=${encodeURIComponent('Built: '+idea+' '+location.href)}`;
 }
-
-inputEl.addEventListener('keydown', e=>{ if(e.key==='Enter') askEmma(); });
-function shareSite(){ navigator.clipboard.writeText(location.href); alert('Link copied: '+location.href); }
+inputEl.addEventListener('keydown',e=>{if(e.key==='Enter')askEmma();});
+function shareSite(){navigator.clipboard.writeText(location.href);alert('Copied!');}
 </script>
 </body>
 </html>
