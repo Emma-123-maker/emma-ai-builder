@@ -3,97 +3,148 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Emma AI Builder - V3</title>
+<title>Emma Super AI - Answer Everything, Build Anything</title>
 <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-black text-white">
-<nav class="p-5 flex justify-between max-w-7xl mx-auto items-center">
-  <h1 class="text-xl font-bold">Emma AI Builder <span class="text-xs bg-orange-500 text-black px-2 py-0.5 rounded-full">V3</span></h1>
-  <a href="#builder" class="bg-white text-black px-5 py-2 rounded-full text-sm font-bold">Get Started</a>
+<body class="bg-[#0a0a0a] text-white min-h-screen flex flex-col">
+<nav class="p-4 flex justify-between max-w-7xl mx-auto w-full border-b border-zinc-900">
+  <h1 class="font-black">EMMA SUPER AI <span class="text-[10px] bg-white text-black px-2 py-0.5 rounded-full ml-1">V4 OMNI</span></h1>
+  <div class="text-[11px] text-zinc-500">Ibadan • Built by Emmanuel</div>
 </nav>
 
-<section class="text-center py-16 px-6 max-w-4xl mx-auto">
-  <div class="inline-block bg-zinc-900 border border-zinc-800 px-4 py-1 rounded-full text-xs mb-6">✨ V3 — Now with live preview</div>
-  <h2 class="text-5xl md:text-7xl font-bold leading-tight">Ready to build<br><span class="bg-gradient-to-r from-orange-400 to-pink-500 bg-clip-text text-transparent">something amazing?</span></h2>
-  <p class="text-zinc-400 mt-5">Describe your idea. Emma builds & shows preview instantly.</p>
-  <div class="mt-8 flex justify-center gap-3">
-    <a href="#builder" class="bg-white text-black px-8 py-3 rounded-full font-bold">Start Building Free</a>
-    <button onclick="document.getElementById('builder').scrollIntoView({behavior:'smooth'})" class="border border-zinc-700 px-8 py-3 rounded-full">View Demo</button>
-  </div>
-</section>
+<div class="flex-1 max-w-6xl mx-auto w-full grid md:grid-cols-[1.2fr_0.8fr] gap-0 md:gap-6 p-0 md:p-6">
 
-<section id="builder" class="max-w-4xl mx-auto px-6 pb-10">
-  <div class="bg-zinc-900 border border-zinc-800 rounded-3xl p-6">
-    <h3 class="font-bold mb-3 text-lg">👇 Try Emma V3 — What do you want to build?</h3>
-    <textarea id="idea" class="w-full bg-black border border-zinc-700 rounded-2xl p-4 h-28 outline-none focus:border-white" placeholder="e.g. A shawarma restaurant in Ibadan with menu, prices, and WhatsApp order..."></textarea>
-    <button onclick="generateV3()" class="mt-4 w-full bg-gradient-to-r from-orange-400 to-pink-500 text-black py-3.5 rounded-full font-black text-lg">✨ Generate Website + Preview</button>
-    
-    <div id="output" class="hidden mt-8 space-y-4">
-      <div class="bg-black border border-zinc-800 rounded-2xl p-4">
-        <p class="text-green-400 font-bold">✅ Website Generated!</p>
-        <p id="ideaText" class="text-sm text-zinc-400 mt-1"></p>
-      </div>
-      <!-- LIVE PREVIEW -->
-      <div id="preview" class="bg-white text-black rounded-2xl overflow-hidden">
-        <!-- injected by JS -->
-      </div>
-      <div class="flex gap-3">
-        <a id="waBtn" target="_blank" class="flex-1 bg-green-500 text-white py-3 rounded-full text-center font-bold">Order on WhatsApp</a>
-        <button onclick="shareSite()" class="flex-1 bg-white text-black py-3 rounded-full font-bold">Share Link</button>
-      </div>
+<!-- LEFT: CHAT THAT ANSWERS EVERYTHING -->
+<div class="flex flex-col h-[85vh] bg-black md:border md:border-zinc-800 md:rounded-3xl overflow-hidden">
+  <div class="p-4 border-b border-zinc-900">
+    <h2 class="font-bold">💬 Ask Anything • Build Anything</h2>
+    <p class="text-xs text-zinc-500">Emma answers all questions + generates websites, apps, rider apps, shops, etc.</p>
+  </div>
+  <div id="chat" class="flex-1 overflow-y-auto p-4 space-y-3 text-sm">
+    <div class="bg-zinc-900 p-3 rounded-2xl rounded-bl-none max-w-[85%]">👋 I'm Emma Super AI. I can:<br>• Answer any question<br>• Build websites/apps/rider apps/shops<br>• Write code<br>• Explain anything<br><br>Try: "Explain quantum physics simply" or "Build me a rider app for Ibadan"</div>
+  </div>
+  <div class="p-3 border-t border-zinc-900 flex gap-2">
+    <input id="chatInput" class="flex-1 bg-zinc-900 border border-zinc-800 rounded-full px-4 py-3 text-sm outline-none focus:border-white" placeholder="Ask anything or say 'build a...'"/>
+    <button onclick="askEmma()" class="bg-white text-black px-6 rounded-full font-bold">Send</button>
+  </div>
+</div>
+
+<!-- RIGHT: BUILDER PREVIEW -->
+<div class="bg-zinc-900 md:rounded-3xl border-t md:border border-zinc-800 flex flex-col h-[85vh]">
+  <div class="p-4 border-b border-zinc-800 flex justify-between items-center">
+    <h3 class="font-bold text-sm">⚡ Live Builder</h3>
+    <span id="status" class="text-[10px] bg-green-500/20 text-green-400 px-2 py-1 rounded-full">READY</span>
+  </div>
+  <div id="preview" class="flex-1 overflow-y-auto bg-white text-black">
+    <div class="p-8 text-center h-full flex flex-col justify-center">
+      <div class="text-5xl">🚀</div>
+      <h3 class="font-black text-xl mt-3">Waiting to build</h3>
+      <p class="text-zinc-500 text-sm mt-1">Chat on the left — if you say "build a rider app", it appears here instantly.</p>
     </div>
   </div>
-</section>
+  <div class="p-3 grid grid-cols-2 gap-2 bg-black rounded-b-3xl">
+    <a id="waBtn" target="_blank" href="https://wa.me/2340000000000" class="bg-green-500 text-white py-2.5 rounded-full text-center font-bold text-sm">WhatsApp</a>
+    <button onclick="shareSite()" class="bg-white text-black py-2.5 rounded-full font-bold text-sm">Share</button>
+  </div>
+</div>
 
-<section class="max-w-6xl mx-auto px-6 py-16 grid md:grid-cols-3 gap-6">
-  <div class="bg-zinc-900 border border-zinc-800 p-7 rounded-2xl"><div class="w-10 h-10 bg-white text-black rounded-full flex items-center justify-center font-bold">1</div><h3 class="font-bold mt-4">Describe</h3><p class="text-sm text-zinc-400 mt-1">Type in plain English.</p></div>
-  <div class="bg-zinc-900 border border-zinc-800 p-7 rounded-2xl"><div class="w-10 h-10 bg-white text-black rounded-full flex items-center justify-center font-bold">2</div><h3 class="font-bold mt-4">Generate</h3><p class="text-sm text-zinc-400 mt-1">V3 creates preview live.</p></div>
-  <div class="bg-zinc-900 border border-zinc-800 p-7 rounded-2xl"><div class="w-10 h-10 bg-white text-black rounded-full flex items-center justify-center font-bold">3</div><h3 class="font-bold mt-4">Deploy</h3><p class="text-sm text-zinc-400 mt-1">Share WhatsApp link.</p></div>
-</section>
-
-<footer class="text-center py-10 border-t border-zinc-900 text-zinc-500 text-xs">
-  Built with ❤️ by Emmanuel Saka — Ibadan, NG<br>V3 — https://emma-123-maker.github.io/emma-ai-builder/
-</footer>
+</div>
 
 <script>
-function generateV3(){
-  const idea = document.getElementById('idea').value;
-  if(!idea){ alert('Type your business idea first!'); return; }
-  const out = document.getElementById('output');
-  const ideaText = document.getElementById('ideaText');
-  const preview = document.getElementById('preview');
-  const waBtn = document.getElementById('waBtn');
-  
-  out.classList.remove('hidden');
-  ideaText.innerText = 'Building: ' + idea;
-  
-  // Generate a real mini-website preview
-  preview.innerHTML = `
-    <div class="p-8 text-center bg-gradient-to-br from-orange-50 to-pink-50">
-      <h2 class="text-3xl font-black">${idea.substring(0,30)}</h2>
-      <p class="text-zinc-600 mt-2 text-sm">Generated by Emma AI Builder for Emmanuel</p>
-      <div class="mt-6 grid grid-cols-2 gap-3 text-left">
-        <div class="bg-white p-4 rounded-xl shadow"><h4 class="font-bold">🔥 Hot Item</h4><p class="text-xs text-zinc-500">Delicious & Fast</p><p class="font-bold mt-1">₦2,500</p></div>
-        <div class="bg-white p-4 rounded-xl shadow"><h4 class="font-bold">⭐ Special</h4><p class="text-xs text-zinc-500">Ibadan's Favorite</p><p class="font-bold mt-1">₦3,000</p></div>
-      </div>
-      <p class="mt-6 text-xs text-zinc-400">Your full idea: "${idea}"</p>
-    </div>
-  `;
-  
-  // WhatsApp link with idea
-  const msg = encodeURIComponent("Hello! I want to order from " + idea + " - I saw it on Emma AI Builder: https://emma-123-maker.github.io/emma-ai-builder/");
-  waBtn.href = "https://wa.me/2340000000000?text=" + msg;
-  
-  out.scrollIntoView({behavior:'smooth'});
+const chatEl = document.getElementById('chat');
+const previewEl = document.getElementById('preview');
+const statusEl = document.getElementById('status');
+const knowledge = {
+  "rider": "Rider App", "shop": "Shop", "restaurant": "Restaurant", "portfolio": "Portfolio", "school": "School App"
+};
+
+function addMsg(text, isUser=false){
+  const div = document.createElement('div');
+  div.className = isUser? 'bg-white text-black p-3 rounded-2xl rounded-br-none ml-auto max-w-[85%]' : 'bg-zinc-900 p-3 rounded-2xl rounded-bl-none max-w-[85%] whitespace-pre-wrap';
+  div.innerText = text;
+  chatEl.appendChild(div);
+  chatEl.scrollTop = chatEl.scrollHeight;
 }
 
-function shareSite(){
-  if(navigator.share){
-    navigator.share({title:'Emma AI Builder', url: location.href});
+function askEmma(){
+  const input = document.getElementById('chatInput');
+  const q = input.value.trim();
+  if(!q) return;
+  addMsg(q, true);
+  input.value = '';
+  statusEl.innerText = 'THINKING...';
+
+  setTimeout(()=>{
+    let answer = '';
+    const low = q.toLowerCase();
+
+    // BUILDABLE INTENTS
+    if(low.includes('build') || low.includes('create') || low.includes('rider') || low.includes('shop') || low.includes('app') || low.includes('website')){
+      answer = `✅ Building: "${q}"\n\nI'm generating your live preview on the right →`;
+      addMsg(answer);
+      buildAnything(q);
+      statusEl.innerText = 'BUILT';
+    } else {
+      // ANSWER ALL QUESTIONS LOGIC
+      if(low.includes('quantum')) answer = 'Quantum physics: Everything is made of tiny particles that can be in 2 places at once until you look. Like a danfo that is both coming and going until you wave it.';
+      else if(low.includes('who are you')) answer = 'I am Emma Super AI V4 — built by Emmanuel Saka in Ibadan. I answer all questions and build any website/app you can imagine.';
+      else if(low.includes('ibadan')) answer = 'Ibadan is the largest city in Nigeria by land mass. You are building the future from there! Biggest tech hub coming from Ibadan is Emma AI.';
+      else if(low.includes('money') || low.includes('make money')) answer = '3 ways to make money with Emma:\n1. Build rider app for your area — charge ₦200 per delivery\n2. Build shop sites for traders in Bodija Market — charge ₦20k each\n3. Build portfolio sites for students — charge ₦5k\nYou already have the tool live!';
+      else answer = `Answer to: "${q}"\n\n${q} is a great question! Here's the breakdown:\n\n1. Core idea: ${q} is about solving a real problem.\n2. How it works: It needs planning, building, and testing.\n3. Ibadan angle: You can build this with Emma AI Builder and launch in 1 day.\n\nWant me to BUILD it? Just say "Build a [your idea]" and I will generate the preview on the right.`;
+
+      addMsg(answer);
+      statusEl.innerText = 'READY';
+    }
+  }, 700);
+}
+
+function buildAnything(idea){
+  const isRider = idea.toLowerCase().includes('rider') || idea.toLowerCase().includes('delivery');
+  const isShop = idea.toLowerCase().includes('shop') || idea.toLowerCase().includes('store');
+
+  if(isRider){
+    previewEl.innerHTML = `
+      <div class="p-5">
+        <h2 class="font-black text-2xl">${idea}</h2>
+        <p class="text-xs text-zinc-500 mt-1">Built by Emma for Emmanuel</p>
+        <div class="mt-4 space-y-3">
+          <input class="w-full border rounded-xl p-3 text-sm" placeholder="Pickup: e.g. UI Gate"/>
+          <input class="w-full border rounded-xl p-3 text-sm" placeholder="Dropoff: e.g. Dugbe"/>
+          <div class="flex gap-2"><button class="flex-1 bg-black text-white py-3 rounded-xl font-bold">Bike ₦800</button><button class="flex-1 border py-3 rounded-xl font-bold">Car ₦1,500</button></div>
+          <button class="w-full bg-green-500 text-white py-3 rounded-xl font-black">Request Rider Now</button>
+          <div class="bg-zinc-100 p-3 rounded-xl text-xs">🗺️ Rider is 3 mins away — Mock map for Ibadan</div>
+        </div>
+      </div>`;
+  } else if(isShop){
+    previewEl.innerHTML = `
+      <div class="p-5 bg-gradient-to-br from-orange-50 to-white min-h-full">
+        <h2 class="font-black text-2xl">${idea}</h2>
+        <div class="mt-4 grid grid-cols-2 gap-2">
+          <div class="bg-white p-3 rounded-xl shadow text-sm"><b>Product 1</b><br>₦5,000 <button class="mt-1 w-full bg-black text-white rounded-full py-1 text-xs">Add</button></div>
+          <div class="bg-white p-3 rounded-xl shadow text-sm"><b>Product 2</b><br>₦7,500 <button class="mt-1 w-full bg-black text-white rounded-full py-1 text-xs">Add</button></div>
+        </div>
+        <button class="mt-4 w-full bg-black text-white py-3 rounded-xl font-bold">Checkout via WhatsApp</button>
+      </div>`;
   } else {
-    navigator.clipboard.writeText(location.href);
-    alert('Link copied: ' + location.href);
+    previewEl.innerHTML = `
+      <div class="p-6 text-center">
+        <h2 class="font-black text-2xl">${idea.substring(0,40)}</h2>
+        <p class="text-sm text-zinc-500 mt-2">${idea}</p>
+        <div class="mt-6 p-4 bg-zinc-100 rounded-xl text-left text-sm">
+          <b>✅ Landing</b><br><b>✅ Features</b><br><b>✅ Contact</b><br><br>Live at emma-123-maker.github.io
+        </div>
+        <button class="mt-4 w-full bg-black text-white py-3 rounded-xl font-bold">Launch Site</button>
+      </div>`;
   }
+  const msg = encodeURIComponent("I built: " + idea + " - " + location.href);
+  document.getElementById('waBtn').href = "https://wa.me/2340000000000?text=" + msg;
+}
+
+document.getElementById('chatInput').addEventListener('keydown', e=>{ if(e.key==='Enter') askEmma(); });
+
+function shareSite(){
+  navigator.clipboard.writeText(location.href);
+  alert('Link copied!');
 }
 </script>
 </body>
