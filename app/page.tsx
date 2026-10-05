@@ -1,0 +1,62 @@
+'use client'
+import { useState } from 'react'
+import { Sandpack } from '@codesandbox/sandpack-react'
+
+const EXAMPLES = [
+  {t:'POS App for My Shop', p:'Build a complete POS app for a shop in Bodija Ibadan with product inventory, barcode search, cart, sales history, print receipt with logo, daily profit dashboard, ₦ currency. Use localStorage. Modern black UI.'},
+  {t:'Church App', p:'Build church management app for RCCG Ibadan with member directory 300+ members, attendance marking with date, donation tracking ₦, events calendar, announcement banner. Full working app.'},
+  {t:'School Result App', p:'Build school result checker app like WAEC portal with student list, enter scores for 6 subjects, auto-calculate total, average, grade A-F, position, remarks, print result sheet with school logo.'},
+  {t:'VTU / Data App', p:'Build VTU app where users buy airtime, data bundles (MTN, Glo, Airtel, 9mobile), enter phone number, select bundle, pay from wallet balance ₦50,000, show transaction history, Paystack mock.'},
+  {t:'PayVault Banking Clone', p:'Build banking app clone like PayVault/Opay/Kuda with dashboard showing balance ₦500,000, account number, send money to bank, transaction history list, cards section, add money via Paystack, analytics chart.'},
+  {t:'E-commerce Store', p:'Build e-commerce store for Bodija market Ibadan with product grid, search, categories, cart, wishlist, checkout via WhatsApp, ₦ prices, delivery fee.'},
+]
+
+export default function Home(){
+  const [prompt,setPrompt]=useState('')
+  const [code,setCode]=useState('')
+  const [loading,setLoading]=useState(false)
+
+  async function buildApp(q?:string){
+    const finalQ = q || prompt
+    if(!finalQ) return
+    setLoading(true); setCode('')
+    try{
+      const res = await fetch('/api/generate',{method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({prompt: finalQ})})
+      if(!res.body) throw new Error('No stream')
+      const reader = res.body.getReader()
+      const decoder = new TextDecoder()
+      let full = ''
+      while(true){
+        const {done,value} = await reader.read()
+        if(done) break
+        full += decoder.decode(value)
+        setCode(full)
+      }
+    }catch(e){ setCode(`// Demo mode - Add OPENAI_API_KEY in Vercel to enable real AI\n// Your prompt: ${finalQ}\n\nexport default function App(){\n return <div style={{padding:20,fontFamily:'sans-serif'}}><h1>🚀 ${finalQ.slice(0,40)}</h1><p>Built by Emma AI Builder - Ibadan</p><button style={{background:'black',color:'white',padding:'12px 24px',borderRadius:20,marginTop:20}}>Working App ✓</button></div>\n}`)}
+    setLoading(false)
+  }
+
+  return(
+    <div className="min-h-screen bg-black text-white">
+      <nav className="p-4 border-b border-zinc-900 flex justify-between sticky top-0 bg-black z-20">
+        <h1 className="font-black tracking-tighter">EMMA AI BUILDER <span className="text-[9px] bg-white text-black px-2 py-0.5 rounded-full ml-2">LOVABLE CLONE</span></h1>
+        <a href="/admin" className="text-xs border border-zinc-800 px-3 py-1.5 rounded-full">Admin • Earnings</a>
+      </nav>
+      <div className="max-w-[1600px] mx-auto grid lg:grid-cols-[420px_1fr] gap-0">
+        <div className="p-6 border-r border-zinc-900 h-[92vh] overflow-auto flex flex-col">
+          <h2 className="text-[42px] font-black leading-[0.9] tracking-tighter">What do you want to build today?</h2>
+          <p className="text-zinc-500 text-[13px] mt-3">Build POS, Church, School, VTU, Banking apps instantly. Like Lovable/Bolt.new</p>
+          <textarea value={prompt} onChange={e=>setPrompt(e.target.value)} placeholder="Build me a POS app for my shop with inventory, sales, receipt, dashboard..." className="w-full mt-6 bg-zinc-900 border border-zinc-800 rounded-2xl p-4 h-28 text-sm outline-none focus:border-white transition"/>
+          <button onClick={()=>buildApp()} className="w-full mt-3 bg-white text-black py-4 rounded-full font-black text-sm disabled:opacity-50">{loading?'Building your app...':'Generate App →'}</button>
+          <div className="grid grid-cols-2 gap-2 mt-6">{EXAMPLES.map(ex=><button key={ex.t} onClick={()=>buildApp(ex.p)} className="border border-zinc-800 hover:bg-zinc-900 p-3 rounded-xl text-left transition"><div className="font-bold text-[12px]">{ex.t}</div><div className="text-[10px] text-zinc-500 line-clamp-1">{ex.p.slice(0,38)}...</div></button>)}</div>
+          <div className="mt-auto pt-6 border-t border-zinc-900"><p className="text-[11px] text-zinc-500">💰 Free: 3 apps. Paid ₦5,000/mo unlimited via Paystack. Domain: emmaibuilder.vercel.app</p></div>
+        </div>
+        <div className="bg-zinc-900 flex flex-col h-[92vh]">
+          <div className="p-3 border-b border-zinc-800 bg-black flex justify-between items-center"><span className="text-xs font-bold">⚡ Live Preview — Real Working App</span><span className="text-[9px] bg-green-400 text-black px-2 py-1 rounded-full animate-pulse">{loading?'BUILDING':'LIVE'}</span></div>
+          <div className="flex-1 bg-white overflow-hidden">{code?<Sandpack template="react" files={{'/App.js': code}} options={{showNavigator:false,showTabs:false,showConsole:false}}/>:<div className="h-full flex flex-col items-center justify-center text-black p-10 text-center"><div className="text-6xl">🚀</div><h3 className="font-black mt-4 text-xl">Your app appears here instantly</h3><p className="text-sm text-zinc-500 mt-2 max-w-sm">Type "POS app for my shop in Bodija" and click Generate. Emma builds full React app with inventory, cart, receipt, dashboard like Lovable does.</p></div>}</div>
+          <div className="p-2 bg-black border-t border-zinc-800 flex gap-2"><button className="flex-1 bg-white text-black py-3 rounded-full font-bold text-xs">Deploy → Get Link + APK</button><button className="flex-1 bg-zinc-800 text-white py-3 rounded-full font-bold text-xs">Share on WhatsApp</button></div>
+        </div>
+      </div>
+    </div>
+  )
+                                                                                                                                                                                                                                                                                                                 }
