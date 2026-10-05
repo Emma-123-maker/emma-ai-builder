@@ -10,7 +10,7 @@
 <!-- NAV -->
 <nav class="p-6 flex justify-between max-w-7xl mx-auto">
   <h1 class="text-xl font-bold">Emma AI Builder</h1>
-  <a href="#" class="bg-white text-black px-5 py-2 rounded-full text-sm font-medium">Get Started</a>
+  <a href="#builder" class="bg-white text-black px-5 py-2 rounded-full text-sm font-medium hover:bg-zinc-200">Get Started</a>
 </nav>
 
 <!-- HERO -->
@@ -19,8 +19,18 @@
   <h2 class="text-5xl md:text-7xl font-bold leading-tight">Ready to build<br><span class="bg-gradient-to-r from-orange-400 to-pink-500 bg-clip-text text-transparent">something amazing?</span></h2>
   <p class="text-zinc-400 mt-6 text-lg">Describe your idea. Emma builds your website, app, and database in seconds.</p>
   <div class="mt-8 flex justify-center gap-4">
-    <button class="bg-white text-black px-8 py-3 rounded-full font-semibold">Start Building Free</button>
-    <button class="border border-zinc-800 px-8 py-3 rounded-full">View Demo</button>
+    <a href="#builder" class="bg-white text-black px-8 py-3 rounded-full font-semibold inline-block text-center">Start Building Free</a>
+    <button onclick="alert('🚀 Demo video coming soon! Built by Emmanuel Saka in Ibadan')" class="border border-zinc-800 px-8 py-3 rounded-full hover:bg-zinc-900">View Demo</button>
+  </div>
+</section>
+
+<!-- WORKING BUILDER -->
+<section id="builder" class="max-w-3xl mx-auto px-6 py-10">
+  <div class="bg-zinc-900 border border-zinc-800 rounded-3xl p-6">
+    <h3 class="font-semibold mb-3">👇 Try Emma Now — What do you want to build?</h3>
+    <textarea id="idea" placeholder="e.g. A restaurant website for Ibadan with menu and WhatsApp order..." class="w-full bg-black border border-zinc-700 rounded-xl p-4 text-white h-28 focus:border-white outline-none"></textarea>
+    <button onclick="generateSite()" class="mt-4 w-full bg-gradient-to-r from-orange-400 to-pink-500 text-black py-3 rounded-full font-bold">✨ Generate Website</button>
+    <div id="output" class="hidden mt-6 p-4 bg-black rounded-xl border border-zinc-800 text-sm"></div>
   </div>
 </section>
 
@@ -43,9 +53,20 @@
   </div>
 </section>
 
-<!-- FOOTER -->
 <footer class="text-center py-12 border-t border-zinc-900 text-zinc-500 text-sm">
-  Built by Emmanuel Saka — Emma AI Builder Clone © 2026
+  Built by Emmanuel Saka — Emma AI Builder © 2026<br>
+  https://emma-123-maker.github.io/emma-ai-builder/
 </footer>
+
+<script>
+function generateSite(){
+  const idea = document.getElementById('idea').value;
+  const out = document.getElementById('output');
+  if(!idea){ alert('Please type your idea first!'); return; }
+  out.classList.remove('hidden');
+  out.innerHTML = `🔨 <b>Emma is building:</b> ${idea}<br><br>✅ Building homepage...<br>✅ Adding database...<br>✅ Deploying to emma-123-maker.github.io...<br><br><span class='text-green-400 font-bold'>Done! V3 with real AI coming next — you just made the buttons work!</span>`;
+  out.scrollIntoView({behavior:'smooth'});
+}
+</script>
 </body>
 </html>
