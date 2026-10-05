@@ -3,149 +3,123 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Emma Super AI - Answer Everything, Build Anything</title>
+<title>Emma Super AI V5 - Answer Everything, Build Anything</title>
 <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-[#0a0a0a] text-white min-h-screen flex flex-col">
-<nav class="p-4 flex justify-between max-w-7xl mx-auto w-full border-b border-zinc-900">
-  <h1 class="font-black">EMMA SUPER AI <span class="text-[10px] bg-white text-black px-2 py-0.5 rounded-full ml-1">V4 OMNI</span></h1>
-  <div class="text-[11px] text-zinc-500">Ibadan • Built by Emmanuel</div>
+<body class="bg-[#080808] text-white min-h-screen flex flex-col">
+<nav class="p-4 flex justify-between max-w-7xl mx-auto w-full border-b border-zinc-900 sticky top-0 bg-black/90 backdrop-blur z-10">
+  <h1 class="font-black tracking-tight">EMMA SUPER AI <span class="text-[10px] bg-gradient-to-r from-orange-400 to-pink-500 text-black px-2 py-0.5 rounded-full ml-1">V5 REAL BRAIN</span></h1>
+  <div class="text-[10px] text-zinc-500">Ibadan • Emmanuel Saka</div>
 </nav>
 
-<div class="flex-1 max-w-6xl mx-auto w-full grid md:grid-cols-[1.2fr_0.8fr] gap-0 md:gap-6 p-0 md:p-6">
+<div class="flex-1 max-w-7xl mx-auto w-full grid lg:grid-cols-[1.3fr_0.7fr] gap-0 lg:gap-5 p-0 lg:p-5">
 
-<!-- LEFT: CHAT THAT ANSWERS EVERYTHING -->
-<div class="flex flex-col h-[85vh] bg-black md:border md:border-zinc-800 md:rounded-3xl overflow-hidden">
+<!-- CHAT -->
+<div class="flex flex-col h-[92vh] lg:h-[85vh] bg-black lg:border border-zinc-800 lg:rounded-[28px] overflow-hidden">
   <div class="p-4 border-b border-zinc-900">
-    <h2 class="font-bold">💬 Ask Anything • Build Anything</h2>
-    <p class="text-xs text-zinc-500">Emma answers all questions + generates websites, apps, rider apps, shops, etc.</p>
+    <h2 class="font-bold text-sm">💬 Emma Omni — Answers Everything</h2>
+    <p class="text-[11px] text-zinc-500 mt-0.5">Real AI + Builder. Try: "What is AI?" or "Build a school result checker"</p>
   </div>
-  <div id="chat" class="flex-1 overflow-y-auto p-4 space-y-3 text-sm">
-    <div class="bg-zinc-900 p-3 rounded-2xl rounded-bl-none max-w-[85%]">👋 I'm Emma Super AI. I can:<br>• Answer any question<br>• Build websites/apps/rider apps/shops<br>• Write code<br>• Explain anything<br><br>Try: "Explain quantum physics simply" or "Build me a rider app for Ibadan"</div>
+  <div id="chat" class="flex-1 overflow-y-auto p-4 space-y-3 text-[13px] leading-relaxed">
+    <div class="bg-zinc-900 p-4 rounded-2xl rounded-bl-none max-w-[92%]">👋 I'm Emma V5 — REAL AI now!<br><br>✅ I can answer: Science, Maths, JAMB, Code, Yoruba, Business, Life<br>✅ I can build: Rider app, Shop, Church site, School portal, Portfolio, Anything you type<br><br><b>Try it:</b> Type "What is Artificial Intelligence?" and see real answer.</div>
   </div>
-  <div class="p-3 border-t border-zinc-900 flex gap-2">
-    <input id="chatInput" class="flex-1 bg-zinc-900 border border-zinc-800 rounded-full px-4 py-3 text-sm outline-none focus:border-white" placeholder="Ask anything or say 'build a...'"/>
-    <button onclick="askEmma()" class="bg-white text-black px-6 rounded-full font-bold">Send</button>
+  <div class="p-3 border-t border-zinc-900 flex gap-2 bg-black">
+    <input id="chatInput" class="flex-1 bg-zinc-900 border border-zinc-800 rounded-full px-4 py-3.5 text-[14px] outline-none focus:border-white" placeholder="Ask anything or say Build a..."/>
+    <button onclick="askEmma()" id="sendBtn" class="bg-white text-black px-7 rounded-full font-black text-sm">Send</button>
   </div>
 </div>
 
-<!-- RIGHT: BUILDER PREVIEW -->
-<div class="bg-zinc-900 md:rounded-3xl border-t md:border border-zinc-800 flex flex-col h-[85vh]">
-  <div class="p-4 border-b border-zinc-800 flex justify-between items-center">
-    <h3 class="font-bold text-sm">⚡ Live Builder</h3>
-    <span id="status" class="text-[10px] bg-green-500/20 text-green-400 px-2 py-1 rounded-full">READY</span>
-  </div>
+<!-- BUILDER -->
+<div class="bg-zinc-900 lg:rounded-[28px] border-t lg:border border-zinc-800 flex flex-col h-[92vh] lg:h-[85vh]">
+  <div class="p-4 border-b border-zinc-800 flex justify-between items-center bg-black lg:rounded-t-[28px]"><h3 class="font-bold text-[13px]">⚡ Live Builder Preview</h3><span id="status" class="text-[10px] bg-green-500/20 text-green-400 px-2.5 py-1 rounded-full border border-green-500/20">READY</span></div>
   <div id="preview" class="flex-1 overflow-y-auto bg-white text-black">
-    <div class="p-8 text-center h-full flex flex-col justify-center">
-      <div class="text-5xl">🚀</div>
-      <h3 class="font-black text-xl mt-3">Waiting to build</h3>
-      <p class="text-zinc-500 text-sm mt-1">Chat on the left — if you say "build a rider app", it appears here instantly.</p>
+    <div class="p-8 text-center h-full flex flex-col justify-center items-center">
+      <div class="text-5xl">🤖</div><h3 class="font-black text-lg mt-4">Waiting to Build</h3><p class="text-zinc-500 text-xs mt-1 max-w-[220px]">Say "Build a rider app for Ibadan" and it appears here live.</p>
     </div>
   </div>
-  <div class="p-3 grid grid-cols-2 gap-2 bg-black rounded-b-3xl">
-    <a id="waBtn" target="_blank" href="https://wa.me/2340000000000" class="bg-green-500 text-white py-2.5 rounded-full text-center font-bold text-sm">WhatsApp</a>
-    <button onclick="shareSite()" class="bg-white text-black py-2.5 rounded-full font-bold text-sm">Share</button>
+  <div class="p-3 grid grid-cols-2 gap-2 bg-black lg:rounded-b-[28px]">
+    <a id="waBtn" target="_blank" href="https://wa.me/2348100000000?text=Hello%20Emmanuel" class="bg-[#25D366] text-white py-3 rounded-full text-center font-bold text-xs">Order on WhatsApp</a>
+    <button onclick="shareSite()" class="bg-white text-black py-3 rounded-full font-bold text-xs">Share Link</button>
   </div>
 </div>
-
 </div>
 
 <script>
 const chatEl = document.getElementById('chat');
 const previewEl = document.getElementById('preview');
 const statusEl = document.getElementById('status');
-const knowledge = {
-  "rider": "Rider App", "shop": "Shop", "restaurant": "Restaurant", "portfolio": "Portfolio", "school": "School App"
-};
+const inputEl = document.getElementById('chatInput');
 
 function addMsg(text, isUser=false){
   const div = document.createElement('div');
-  div.className = isUser? 'bg-white text-black p-3 rounded-2xl rounded-br-none ml-auto max-w-[85%]' : 'bg-zinc-900 p-3 rounded-2xl rounded-bl-none max-w-[85%] whitespace-pre-wrap';
+  div.className = isUser? 'bg-white text-black p-3.5 rounded-2xl rounded-br-none ml-auto max-w-[85%] font-medium' : 'bg-zinc-900 p-3.5 rounded-2xl rounded-bl-none max-w-[92%] whitespace-pre-wrap';
   div.innerText = text;
   chatEl.appendChild(div);
   chatEl.scrollTop = chatEl.scrollHeight;
+  return div;
 }
 
-function askEmma(){
-  const input = document.getElementById('chatInput');
-  const q = input.value.trim();
+async function askEmma(){
+  const q = inputEl.value.trim();
   if(!q) return;
   addMsg(q, true);
-  input.value = '';
+  inputEl.value = '';
+  const low = q.toLowerCase();
+
+  // BUILD INTENT -> Build anything
+  if(low.includes('build') || low.includes('create') || low.includes('make') && (low.includes('app') || low.includes('website') || low.includes('site') || low.includes('shop') || low.includes('rider') || low.includes('portal'))){
+    statusEl.innerText = 'BUILDING...';
+    statusEl.className = 'text-[10px] bg-orange-500/20 text-orange-400 px-2.5 py-1 rounded-full border border-orange-500/20';
+    addMsg(`✅ Building "${q}"... See preview on the right →`);
+    buildAnything(q);
+    setTimeout(()=>{statusEl.innerText='BUILT'; statusEl.className='text-[10px] bg-green-500/20 text-green-400 px-2.5 py-1 rounded-full border border-green-500/20'},800);
+    return;
+  }
+
+  // ANSWER EVERYTHING WITH REAL AI
   statusEl.innerText = 'THINKING...';
+  const thinking = addMsg('🧠 Emma is thinking...');
+  document.getElementById('sendBtn').innerText = '...';
 
-  setTimeout(()=>{
-    let answer = '';
-    const low = q.toLowerCase();
+  try{
+    // FREE REAL AI - Pollinations
+    const prompt = encodeURIComponent(`You are Emma Super AI V5 built by Emmanuel Saka from Ibadan, Nigeria. You are helpful, smart, concise. Answer in clear simple English. If user asks in Yoruba or Pidgin, answer in same language. Question: ${q}`);
+    const res = await fetch(`https://text.pollinations.ai/${prompt}`);
+    const answer = await res.text();
+    chatEl.removeChild(thinking);
+    addMsg(answer);
+  }catch(err){
+    chatEl.removeChild(thinking);
+    addMsg(`Let me answer: ${q}\n\n` + getSmartFallback(q));
+  }
+  document.getElementById('sendBtn').innerText = 'Send';
+  statusEl.innerText = 'READY';
+  statusEl.className = 'text-[10px] bg-green-500/20 text-green-400 px-2.5 py-1 rounded-full border border-green-500/20';
+}
 
-    // BUILDABLE INTENTS
-    if(low.includes('build') || low.includes('create') || low.includes('rider') || low.includes('shop') || low.includes('app') || low.includes('website')){
-      answer = `✅ Building: "${q}"\n\nI'm generating your live preview on the right →`;
-      addMsg(answer);
-      buildAnything(q);
-      statusEl.innerText = 'BUILT';
-    } else {
-      // ANSWER ALL QUESTIONS LOGIC
-      if(low.includes('quantum')) answer = 'Quantum physics: Everything is made of tiny particles that can be in 2 places at once until you look. Like a danfo that is both coming and going until you wave it.';
-      else if(low.includes('who are you')) answer = 'I am Emma Super AI V4 — built by Emmanuel Saka in Ibadan. I answer all questions and build any website/app you can imagine.';
-      else if(low.includes('ibadan')) answer = 'Ibadan is the largest city in Nigeria by land mass. You are building the future from there! Biggest tech hub coming from Ibadan is Emma AI.';
-      else if(low.includes('money') || low.includes('make money')) answer = '3 ways to make money with Emma:\n1. Build rider app for your area — charge ₦200 per delivery\n2. Build shop sites for traders in Bodija Market — charge ₦20k each\n3. Build portfolio sites for students — charge ₦5k\nYou already have the tool live!';
-      else answer = `Answer to: "${q}"\n\n${q} is a great question! Here's the breakdown:\n\n1. Core idea: ${q} is about solving a real problem.\n2. How it works: It needs planning, building, and testing.\n3. Ibadan angle: You can build this with Emma AI Builder and launch in 1 day.\n\nWant me to BUILD it? Just say "Build a [your idea]" and I will generate the preview on the right.`;
-
-      addMsg(answer);
-      statusEl.innerText = 'READY';
-    }
-  }, 700);
+function getSmartFallback(q){
+  if(q.toLowerCase().includes('what is ai')) return `AI means Artificial Intelligence — computers that learn and think like humans.\n\nTypes:\n1. Narrow AI - does one task (like Emma chat)\n2. General AI - thinks like human (coming soon)\n3. Super AI - smarter than all humans\n\nExamples: ChatGPT, Emma AI Builder, self-driving bikes in Ibadan.\n\nYou are already building one at emma-123-maker.github.io — you are an AI builder from Ibadan!`;
+  return `Great question about "${q}"!\n\nHere's a quick breakdown:\n• What it is: ${q} is important and worth learning.\n• Why it matters: It helps solve real problems in Ibadan and globally.\n• How to start: You can build a project about it with Emma.\n\nAsk me more specific, or say "Build an app for ${q}" and I'll build it.`;
 }
 
 function buildAnything(idea){
-  const isRider = idea.toLowerCase().includes('rider') || idea.toLowerCase().includes('delivery');
-  const isShop = idea.toLowerCase().includes('shop') || idea.toLowerCase().includes('store');
-
-  if(isRider){
-    previewEl.innerHTML = `
-      <div class="p-5">
-        <h2 class="font-black text-2xl">${idea}</h2>
-        <p class="text-xs text-zinc-500 mt-1">Built by Emma for Emmanuel</p>
-        <div class="mt-4 space-y-3">
-          <input class="w-full border rounded-xl p-3 text-sm" placeholder="Pickup: e.g. UI Gate"/>
-          <input class="w-full border rounded-xl p-3 text-sm" placeholder="Dropoff: e.g. Dugbe"/>
-          <div class="flex gap-2"><button class="flex-1 bg-black text-white py-3 rounded-xl font-bold">Bike ₦800</button><button class="flex-1 border py-3 rounded-xl font-bold">Car ₦1,500</button></div>
-          <button class="w-full bg-green-500 text-white py-3 rounded-xl font-black">Request Rider Now</button>
-          <div class="bg-zinc-100 p-3 rounded-xl text-xs">🗺️ Rider is 3 mins away — Mock map for Ibadan</div>
-        </div>
-      </div>`;
-  } else if(isShop){
-    previewEl.innerHTML = `
-      <div class="p-5 bg-gradient-to-br from-orange-50 to-white min-h-full">
-        <h2 class="font-black text-2xl">${idea}</h2>
-        <div class="mt-4 grid grid-cols-2 gap-2">
-          <div class="bg-white p-3 rounded-xl shadow text-sm"><b>Product 1</b><br>₦5,000 <button class="mt-1 w-full bg-black text-white rounded-full py-1 text-xs">Add</button></div>
-          <div class="bg-white p-3 rounded-xl shadow text-sm"><b>Product 2</b><br>₦7,500 <button class="mt-1 w-full bg-black text-white rounded-full py-1 text-xs">Add</button></div>
-        </div>
-        <button class="mt-4 w-full bg-black text-white py-3 rounded-xl font-bold">Checkout via WhatsApp</button>
-      </div>`;
+  const id = idea.toLowerCase();
+  let html = '';
+  if(id.includes('rider') || id.includes('delivery') || id.includes('dispatch')){
+    html = `<div class="p-4"><h2 class="font-black text-xl">${idea}</h2><p class="text-[11px] text-zinc-500">Live Rider App — Ibadan</p><input class="w-full border border-zinc-300 rounded-xl p-3 text-sm mt-4" placeholder="From: UI Gate"/><input class="w-full border border-zinc-300 rounded-xl p-3 text-sm mt-2" placeholder="To: Bodija"/><div class="grid grid-cols-2 gap-2 mt-3"><button class="bg-black text-white py-3 rounded-xl font-bold text-sm">Bike ₦800</button><button class="border py-3 rounded-xl font-bold text-sm">Keke ₦1,200</button></div><button class="w-full bg-green-500 text-white py-3 rounded-xl font-black mt-3">Request Rider Now</button><div class="mt-3 bg-zinc-100 p-3 rounded-xl text-[11px]">🗺️ Mock map: Rider 2 mins away from Mokola</div></div>`;
+  } else if(id.includes('shop') || id.includes('store') || id.includes('market')){
+    html = `<div class="p-4 bg-orange-50 min-h-full"><h2 class="font-black text-xl">${idea}</h2><div class="grid grid-cols-2 gap-2 mt-4"><div class="bg-white p-3 rounded-xl shadow-sm"><div class="h-16 bg-zinc-100 rounded-lg"></div><b class="text-sm">Item</b><br><span class="text-xs">₦5k</span><button class="w-full bg-black text-white rounded-full py-1.5 text-[11px] mt-1">Add to Cart</button></div><div class="bg-white p-3 rounded-xl shadow-sm"><div class="h-16 bg-zinc-100 rounded-lg"></div><b class="text-sm">Item</b><br><span class="text-xs">₦7k</span><button class="w-full bg-black text-white rounded-full py-1.5 text-[11px] mt-1">Add to Cart</button></div></div><button class="w-full bg-black text-white py-3 rounded-xl font-bold mt-4">Checkout on WhatsApp</button></div>`;
+  } else if(id.includes('school') || id.includes('result') || id.includes('portal')){
+    html = `<div class="p-5"><h2 class="font-black text-xl">🎓 ${idea}</h2><input class="w-full border rounded-xl p-3 text-sm mt-4" placeholder="Student ID / Matric"/><input class="w-full border rounded-xl p-3 text-sm mt-2" placeholder="Password"/><button class="w-full bg-blue-600 text-white py-3 rounded-xl font-bold mt-3">Check Result</button><div class="mt-4 bg-blue-50 p-3 rounded-xl text-xs">GPA: 4.2 — Built by Emma for Emmanuel</div></div>`;
   } else {
-    previewEl.innerHTML = `
-      <div class="p-6 text-center">
-        <h2 class="font-black text-2xl">${idea.substring(0,40)}</h2>
-        <p class="text-sm text-zinc-500 mt-2">${idea}</p>
-        <div class="mt-6 p-4 bg-zinc-100 rounded-xl text-left text-sm">
-          <b>✅ Landing</b><br><b>✅ Features</b><br><b>✅ Contact</b><br><br>Live at emma-123-maker.github.io
-        </div>
-        <button class="mt-4 w-full bg-black text-white py-3 rounded-xl font-bold">Launch Site</button>
-      </div>`;
+    html = `<div class="p-6 text-center"><h2 class="font-black text-2xl">${idea.slice(0,45)}</h2><p class="text-xs text-zinc-500 mt-2">${idea}</p><div class="mt-6 text-left bg-zinc-100 p-4 rounded-2xl text-xs space-y-1"><div>✅ Modern Landing Page</div><div>✅ Mobile Responsive</div><div>✅ Contact Form</div><div>✅ Hosted at your GitHub</div></div><button class="mt-5 w-full bg-black text-white py-3 rounded-xl font-bold">Publish Website</button></div>`;
   }
-  const msg = encodeURIComponent("I built: " + idea + " - " + location.href);
-  document.getElementById('waBtn').href = "https://wa.me/2340000000000?text=" + msg;
+  previewEl.innerHTML = html;
+  document.getElementById('waBtn').href = `https://wa.me/2348100000000?text=${encodeURIComponent('I built: '+idea+' via '+location.href)}`;
 }
 
-document.getElementById('chatInput').addEventListener('keydown', e=>{ if(e.key==='Enter') askEmma(); });
-
-function shareSite(){
-  navigator.clipboard.writeText(location.href);
-  alert('Link copied!');
-}
+inputEl.addEventListener('keydown', e=>{ if(e.key==='Enter') askEmma(); });
+function shareSite(){ navigator.clipboard.writeText(location.href); alert('Link copied: '+location.href); }
 </script>
 </body>
 </html>
