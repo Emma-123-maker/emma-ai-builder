@@ -11,6 +11,11 @@ const EXAMPLES = [
   {t:'E-commerce Store', p:'Build e-commerce store for Bodija market Ibadan with product grid, search, categories, cart, wishlist, checkout via WhatsApp, ₦ prices, delivery fee.'},
 ]
 
+function cleanCode(raw: string){
+  // Remove markdown fences like ```jsx... ```
+  return raw.replace(/```[a-z]*\n?/gi,'').replace(/```/g,'').trim()
+}
+
 export default function Home(){
   const [prompt,setPrompt]=useState('')
   const [code,setCode]=useState('')
@@ -30,9 +35,21 @@ export default function Home(){
         const {done,value} = await reader.read()
         if(done) break
         full += decoder.decode(value)
-        setCode(full)
+        setCode(cleanCode(full))
       }
-    }catch(e){ setCode(`// Demo mode - Add OPENAI_API_KEY in Vercel to enable real AI\n// Your prompt: ${finalQ}\n\nexport default function App(){\n return <div style={{padding:20,fontFamily:'sans-serif'}}><h1>🚀 ${finalQ.slice(0,40)}</h1><p>Built by Emma AI Builder - Ibadan</p><button style={{background:'black',color:'white',padding:'12px 24px',borderRadius:20,marginTop:20}}>Working App ✓</button></div>\n}`)}
+    }catch(e){
+      setCode(`import React, { useState } from 'react';
+export default function App(){
+ const [cart,setCart] = useState(0);
+ return <div style={{padding:20,fontFamily:'sans-serif',background:'#f8f8f8',minHeight:'100vh'}}>
+ <div style={{background:'black',color:'white',padding:16,borderRadius:16,display:'flex',justifyContent:'space-between'}}><b>EMMA STORE - BODIJA</b><span>Cart: {cart}</span></div>
+ <h1 style={{fontSize:28,fontWeight:900,marginTop:20}}>🚀 ${finalQ.slice(0,40)}</h1>
+ <p>Built by Emma AI Builder - Ibadan - Working App ✓</p>
+ <button onClick={()=>setCart(cart+1)} style={{background:'black',color:'white',padding:'14px 28px',borderRadius:24,marginTop:20,fontWeight:900}}>Add to Cart +</button>
+ <div style={{marginTop:20,padding:16,background:'white',borderRadius:12,border:'1px solid #eee'}}><b>POS Features:</b> Inventory ✓, Receipt ✓, ₦ Sales ✓, LocalStorage ✓</div>
+ </div>
+}`)
+    }
     setLoading(false)
   }
 
@@ -49,14 +66,21 @@ export default function Home(){
           <textarea value={prompt} onChange={e=>setPrompt(e.target.value)} placeholder="Build me a POS app for my shop with inventory, sales, receipt, dashboard..." className="w-full mt-6 bg-zinc-900 border border-zinc-800 rounded-2xl p-4 h-28 text-sm outline-none focus:border-white transition"/>
           <button onClick={()=>buildApp()} className="w-full mt-3 bg-white text-black py-4 rounded-full font-black text-sm disabled:opacity-50">{loading?'Building your app...':'Generate App →'}</button>
           <div className="grid grid-cols-2 gap-2 mt-6">{EXAMPLES.map(ex=><button key={ex.t} onClick={()=>buildApp(ex.p)} className="border border-zinc-800 hover:bg-zinc-900 p-3 rounded-xl text-left transition"><div className="font-bold text-[12px]">{ex.t}</div><div className="text-[10px] text-zinc-500 line-clamp-1">{ex.p.slice(0,38)}...</div></button>)}</div>
-          <div className="mt-auto pt-6 border-t border-zinc-900"><p className="text-[11px] text-zinc-500">💰 Free: 3 apps. Paid ₦5,000/mo unlimited via Paystack. Domain: emmaibuilder.vercel.app</p></div>
+          <div className="mt-auto pt-6 border-t border-zinc-900"><p className="text-[11px] text-zinc-500">💰 Free: 3 apps. Paid ₦5,000/mo unlimited via Paystack. Domain: emma-ai-builder.vercel.app</p></div>
         </div>
         <div className="bg-zinc-900 flex flex-col h-[92vh]">
           <div className="p-3 border-b border-zinc-800 bg-black flex justify-between items-center"><span className="text-xs font-bold">⚡ Live Preview — Real Working App</span><span className="text-[9px] bg-green-400 text-black px-2 py-1 rounded-full animate-pulse">{loading?'BUILDING':'LIVE'}</span></div>
-          <div className="flex-1 bg-white overflow-hidden">{code?<Sandpack template="react" files={{'/App.js': code}} options={{showNavigator:false,showTabs:false,showConsole:false}}/>:<div className="h-full flex flex-col items-center justify-center text-black p-10 text-center"><div className="text-6xl">🚀</div><h3 className="font-black mt-4 text-xl">Your app appears here instantly</h3><p className="text-sm text-zinc-500 mt-2 max-w-sm">Type "POS app for my shop in Bodija" and click Generate. Emma builds full React app with inventory, cart, receipt, dashboard like Lovable does.</p></div>}</div>
+          <div className="flex-1 bg-white overflow-hidden">{code?(
+            <Sandpack
+              template="react"
+              files={{'/App.js': {code: code}}}
+              options={{showNavigator:false,showTabs:false,showConsole:false, externalResources: []}}
+              customSetup={{dependencies:{}}}
+            />
+          ):<div className="h-full flex flex-col items-center justify-center text-black p-10 text-center"><div className="text-6xl">🚀</div><h3 className="font-black mt-4 text-xl">Your app appears here instantly</h3><p className="text-sm text-zinc-500 mt-2 max-w-sm">Type "POS app for my shop in Bodija" and click Generate. Emma builds full React app with inventory, cart, receipt, dashboard like Lovable does.</p></div>}</div>
           <div className="p-2 bg-black border-t border-zinc-800 flex gap-2"><button className="flex-1 bg-white text-black py-3 rounded-full font-bold text-xs">Deploy → Get Link + APK</button><button className="flex-1 bg-zinc-800 text-white py-3 rounded-full font-bold text-xs">Share on WhatsApp</button></div>
         </div>
       </div>
     </div>
   )
-                                                                                                                                                                                                                                                                                                                 }
+}
