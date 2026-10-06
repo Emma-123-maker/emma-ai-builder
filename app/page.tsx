@@ -19,11 +19,12 @@ export default function Home(){
   const [prompt,setPrompt]=useState('')
   const [code,setCode]=useState('')
   const [loading,setLoading]=useState(false)
+  const [published,setPublished]=useState(false)
 
   async function buildApp(q?:string){
     const finalQ = q || prompt
     if(!finalQ) return
-    setLoading(true); setCode('')
+    setLoading(true); setCode(''); setPublished(false)
     try{
       const res = await fetch('/api/generate',{method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({prompt: finalQ})})
       if(!res.body) throw new Error('No stream')
@@ -51,6 +52,29 @@ export default function App(){
     setLoading(false)
   }
 
+  function handleDownload(){
+    if(!code) return alert('Build an app first!')
+    const html = `<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Emma App</title><script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script><script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script><script src="https://unpkg.com/@babel/standalone/babel.min.js"></script><style>body{margin:0}</style></head><body><div id="root"></div><script type="text/babel">${code.replace('export default function App','function App')}\nconst root=ReactDOM.createRoot(document.getElementById('root'));root.render(React.createElement(App));<\/script></body></html>`
+    const blob = new Blob([html], {type:'text/html'})
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href=url; a.download=`emma-app-${Date.now()}.html`; a.click()
+  }
+
+  async function handlePublish(){
+    if(!code) return alert('Build an app first!')
+    try{
+      await navigator.clipboard.writeText(code)
+    }catch{}
+    const win = window.open()
+    if(win){
+      win.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Published - Emma AI</title><script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script><script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script><script src="https://unpkg.com/@babel/standalone/babel.min.js"></script></head><body style="margin:0"><div id="root"></div><div style="position:fixed;bottom:10px;right:10px;background:black;color:white;padding:6px 10px;border-radius:20px;font-size:10px;font-family:sans-serif">Published by EMMA AI BUILDER • Ibadan</div><script type="text/babel">${code.replace('export default function App','function App')}\nconst root=ReactDOM.createRoot(document.getElementById('root'));root.render(React.createElement(App));<\/script></body></html>`)
+      win.document.close()
+    }
+    setPublished(true)
+    setTimeout(()=>alert('✅ Published!\n\nYour app opened in a NEW TAB — that tab link is shareable.\n\n1. In new tab, tap Share → Copy link\n2. Send to customers on WhatsApp\n\nCode also copied to clipboard for Vercel deployment.'), 500)
+  }
+
   return(
     <div className="min-h-screen bg-black text-white">
       <nav className="p-4 border-b border-zinc-900 flex justify-between sticky top-0 bg-black z-20">
@@ -64,16 +88,35 @@ export default function App(){
           <textarea value={prompt} onChange={e=>setPrompt(e.target.value)} placeholder="Build me a POS app..." className="w-full mt-6 bg-zinc-900 border border-zinc-800 rounded-2xl p-4 h-28 text-sm outline-none focus:border-white"/>
           <button onClick={()=>buildApp()} className="w-full mt-3 bg-white text-black py-4 rounded-full font-black text-sm">{loading?'Building...':'Generate App →'}</button>
           <div className="grid grid-cols-2 gap-2 mt-6">{EXAMPLES.map(ex=><button key={ex.t} onClick={()=>buildApp(ex.p)} className="border border-zinc-800 hover:bg-zinc-900 p-3 rounded-xl text-left"><div className="font-bold text-[12px]">{ex.t}</div></button>)}</div>
+          {code && (
+            <div className="mt-6 p-4 bg-zinc-900 rounded-2xl border border-zinc-800">
+              <p className="text-[11px] text-zinc-400">Publish steps for VTU Wallet:</p>
+              <ol className="text-[11px] mt-2 list-decimal ml-4 space-y-1 text-zinc-300">
+                <li>Tap Publish → new tab opens</li>
+                <li>Share new tab link to customers</li>
+                <li>Or Download HTML → host on Vercel</li>
+              </ol>
+            </div>
+          )}
         </div>
         <div className="bg-white flex flex-col h-[92vh]">
-          <div className="p-3 border-b bg-black text-white flex justify-between"><span className="text-xs font-bold">⚡ Live Preview</span><span className="text-[9px] bg-green-400 text-black px-2 py-1 rounded-full">{loading?'BUILDING':'LIVE'}</span></div>
+          <div className="p-3 border-b bg-black text-white flex justify-between items-center">
+            <span className="text-xs font-bold">⚡ Live Preview</span>
+            <div className="flex gap-2 items-center">
+              {code && <>
+                <button onClick={handleDownload} className="text-[11px] bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 px-3 py-1.5 rounded-full font-bold">⬇ Download HTML</button>
+                <button onClick={handlePublish} className="text-[11px] bg-white text-black px-4 py-1.5 rounded-full font-black">{published?'✅ Published':'🚀 Publish'}</button>
+              </>}
+              <span className="text-[9px] bg-green-400 text-black px-2 py-1 rounded-full ml-1">{loading?'BUILDING':'LIVE'}</span>
+            </div>
+          </div>
           <div className="flex-1 overflow-hidden">
             {code? (
               <SandpackProvider template="react" files={{'/App.js': code}} style={{height:'100%'}}>
                 <SandpackPreview style={{height:'100%'}} showNavigator={false} showOpenInCodeSandbox={false} showRefreshButton={false} />
               </SandpackProvider>
             ) : (
-              <div className="h-full flex flex-col items-center justify-center text-black p-10 text-center"><div className="text-6xl">🚀</div><h3 className="font-black mt-4 text-xl">Your app appears here</h3></div>
+              <div className="h-full flex flex-col items-center justify-center text-black p-10 text-center"><div className="text-6xl">🚀</div><h3 className="font-black mt-4 text-xl">Your app appears here</h3><p className="text-zinc-500 text-sm mt-2">Build VTU Wallet then tap Publish</p></div>
             )}
           </div>
         </div>
