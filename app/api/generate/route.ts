@@ -48,7 +48,7 @@ STRICT RULES:
     if(hasGroq){
       const groq = new OpenAI({ apiKey: process.env.GROQ_API_KEY!, baseURL: 'https://api.groq.com/openai/v1' })
       const stream = await groq.chat.completions.create({
-        model: "llama-3.1-70b-versatile",
+        model: "openai/gpt-oss-120b",
         stream: true,
         messages: [{role:"system", content: systemPrompt}, {role:"user", content: prompt}]
       })
@@ -64,7 +64,7 @@ STRICT RULES:
     if(hasOpenRouter){
       const or = new OpenAI({ apiKey: process.env.OPENROUTER_API_KEY!, baseURL: 'https://openrouter.ai/api/v1' })
       const stream = await or.chat.completions.create({
-        model: "meta-llama/llama-3.1-8b-instruct:free",
+        model: "openai/gpt-oss-20b",
         stream: true,
         messages: [{role:"system", content: systemPrompt}, {role:"user", content: prompt}]
       })
