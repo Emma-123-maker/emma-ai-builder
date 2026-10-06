@@ -1,61 +1,62 @@
 import OpenAI from 'openai'
 export const runtime = 'edge'
 
-function fixCode(raw: string){
-  let code = raw.replace(/```[a-z]*\n?/gi,'').replace(/```/g,'').trim()
-  // Fix broken import that causes your screenshot error
-  code = code.replace(/import\s+React,\s*\{\s*useState,\s*useEffect\s*\n+\s*\}/g, 'import React, { useState, useEffect } from \'react\';')
-  code = code.replace(/import React,\s*\{\s*useState,\s*useEffect\s*\}\s*\n+\s*\}/g, 'import React, { useState, useEffect } from \'react\';')
-  // Ensure first line is correct
-  if(!code.startsWith('import React')){
-    code = `import React, { useState, useEffect } from 'react';\n` + code.replace(/^import.*\n?/, '')
+function clean(s:string){
+  let c = s.replace(/```[a-z]*\n?/gi,'').replace(/```/g,'').trim()
+  // Force newline after import
+  c = c.replace(/from\s+['"]react['"]\s*;?\s*export/g, `from 'react';\n\nexport`)
+  c = c.replace(/from\s+['"]react['"]\s*export/g, `from 'react';\n\nexport`)
+  // Force App() with parens
+  c = c.replace(/export default function App\s*\(\)\s*\{/, `export default function App(){`)
+  c = c.replace(/export default function App\s*\{/, `export default function App(){`)
+  c = c.replace(/export default function App\s*\n/, `export default function App(){\n`)
+  c = c.replace(/export default function App$/, `export default function App(){`)
+  // Ensure first line perfect
+  if(!c.startsWith('import React')){
+    c = `import React, { useState, useEffect } from 'react';\n\n` + c.replace(/^import.*react.*\n?/i,'').trim()
   }
-  // Ensure from 'react'
-  if(!code.includes("from 'react'") &&!code.includes('from "react"')){
-    code = code.replace(/import React.*/, `import React, { useState, useEffect } from 'react';`)
-  }
-  // Remove stray leading characters
-  code = code.replace(/^\s*['"]?from\s+['"]react['"];?\s*\n?/, '')
-  return code
+  // If still stuck together, split
+  c = c.replace(/';export/, `';\n\nexport`)
+  return c
 }
 
 export async function POST(req: Request){
   const { prompt } = await req.json()
-  const system = `You are Bolt.new. Build app for: ${prompt}
-CRITICAL RULES - MUST FOLLOW EXACTLY:
-1) FIRST LINE MUST BE EXACTLY: import React, { useState, useEffect } from 'react';
-2) ONE LINE, NO LINE BREAKS IN IMPORT EVER
-3) SECOND LINE: export default function App(){
-4) NO TYPESCRIPT, NO :types
-5) ONLY RAW CODE, NO MARKDOWN, NO BACKTICKS
-6) BLACK PREMIUM UI, ₦, localStorage, WORKING, >200 LINES
-Build: ${prompt}`
+  const system = `You MUST output code starting EXACTLY like this, character for character, with newline:
+import React, { useState, useEffect } from 'react';
 
+export default function App(){
+...rest
+
+RULES: NO markdown. NO backticks. Keep import on line 1 alone. Line 3 MUST be export default function App(){ with (). Then build: ${prompt} - Black premium UI, ₦, localStorage, full app >200 lines`
+
+  const groq = new OpenAI({ apiKey: process.env.GROQ_API_KEY, baseURL: 'https://api.groq.com/openai/v1' })
   try{
-    const groq = new OpenAI({ apiKey: process.env.GROQ_API_KEY, baseURL: 'https://api.groq.com/openai/v1' })
     const stream = await groq.chat.completions.create({
       model: "openai/gpt-oss-20b",
       stream: true,
       messages: [{role:'system',content:system},{role:'user',content:prompt}],
-      temperature: 0.65,
+      temperature: 0.6,
       max_tokens: 8000
     })
     const enc = new TextEncoder()
-    let full = ''
+    let buffer = ''
     return new Response(new ReadableStream({
-      async start(c){
+      async start(ctrl){
         for await (const ch of stream){
           let t = ch.choices[0]?.delta?.content||''
-          if(t){
-            full += t
-            t = t.replace(/```[a-z]*\n?/gi,'').replace(/```/g,'')
-            if(t) c.enqueue(enc.encode(t))
-          }
+          if(!t) continue
+          buffer += t
+          let out = clean(t)
+          // Don't send broken partials on first chunk
+          if(buffer.length < 100) continue
+          let cleanedChunk = t.replace(/```[a-z]*\n?/gi,'').replace(/```/g,'')
+          if(cleanedChunk) ctrl.enqueue(enc.encode(cleanedChunk))
         }
-        c.close()
+        ctrl.close()
       }
     }), {headers:{'Content-Type':'text/plain'}})
   }catch(e:any){
-    return new Response(JSON.stringify({error:e.message}), {status:500, headers:{'Content-Type':'application/json'}})
+    return new Response(JSON.stringify({error:e.message}), {status:500})
   }
 }
