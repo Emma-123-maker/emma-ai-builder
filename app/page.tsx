@@ -15,6 +15,16 @@ function cleanCode(raw: string){
   return raw.replace(/```[a-z]*\n?/gi,'').replace(/```/g,'').trim()
 }
 
+function cleanForPublish(c: string){
+  return c
+   .replace(/: any/g,'')
+   .replace(/: number/g,'')
+   .replace(/: string/g,'')
+   .replace(/: boolean/g,'')
+   .replace(/export default function App/,'function App')
+   .replace(/import.*from.*react.*;\n?/gi,'')
+}
+
 export default function Home(){
   const [prompt,setPrompt]=useState('')
   const [code,setCode]=useState('')
@@ -54,7 +64,11 @@ export default function App(){
 
   function handleDownload(){
     if(!code) return alert('Build an app first!')
-    const html = `<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Emma App</title><script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script><script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script><script src="https://unpkg.com/@babel/standalone/babel.min.js"></script><style>body{margin:0}</style></head><body><div id="root"></div><script type="text/babel">${code.replace('export default function App','function App')}\nconst root=ReactDOM.createRoot(document.getElementById('root'));root.render(React.createElement(App));<\/script></body></html>`
+    const clean = cleanForPublish(code)
+    const html = `<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Emma App</title><script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script><script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script><script src="https://unpkg.com/@babel/standalone/babel.min.js"></script><style>body{margin:0}</style></head><body><div id="root"></div><div id="err" style="padding:20px;color:red"></div><script type="text/babel" data-presets="react">
+${clean}
+try{const root=ReactDOM.createRoot(document.getElementById('root'));root.render(React.createElement(App));}catch(e){document.getElementById('err').innerText='Error: '+e.message}
+<\/script></body></html>`
     const blob = new Blob([html], {type:'text/html'})
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
@@ -63,16 +77,16 @@ export default function App(){
 
   async function handlePublish(){
     if(!code) return alert('Build an app first!')
-    try{
-      await navigator.clipboard.writeText(code)
-    }catch{}
-    const win = window.open()
+    const clean = cleanForPublish(code)
+    const win = window.open('','_blank')
     if(win){
-      win.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Published - Emma AI</title><script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script><script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script><script src="https://unpkg.com/@babel/standalone/babel.min.js"></script></head><body style="margin:0"><div id="root"></div><div style="position:fixed;bottom:10px;right:10px;background:black;color:white;padding:6px 10px;border-radius:20px;font-size:10px;font-family:sans-serif">Published by EMMA AI BUILDER • Ibadan</div><script type="text/babel">${code.replace('export default function App','function App')}\nconst root=ReactDOM.createRoot(document.getElementById('root'));root.render(React.createElement(App));<\/script></body></html>`)
+      win.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Published - Emma AI</title><script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script><script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script><script src="https://unpkg.com/@babel/standalone/babel.min.js"></script><style>body{margin:0}</style></head><body><div id="root"></div><script type="text/babel" data-presets="react">
+${clean}
+const root=ReactDOM.createRoot(document.getElementById('root'));root.render(React.createElement(App));
+<\/script><div style="position:fixed;bottom:10px;right:10px;background:black;color:white;padding:6px 10px;border-radius:20px;font-size:10px;font-family:sans-serif">Published by EMMA AI BUILDER • Ibadan</div></body></html>`)
       win.document.close()
     }
     setPublished(true)
-    setTimeout(()=>alert('✅ Published!\n\nYour app opened in a NEW TAB — that tab link is shareable.\n\n1. In new tab, tap Share → Copy link\n2. Send to customers on WhatsApp\n\nCode also copied to clipboard for Vercel deployment.'), 500)
   }
 
   return(
@@ -88,16 +102,6 @@ export default function App(){
           <textarea value={prompt} onChange={e=>setPrompt(e.target.value)} placeholder="Build me a POS app..." className="w-full mt-6 bg-zinc-900 border border-zinc-800 rounded-2xl p-4 h-28 text-sm outline-none focus:border-white"/>
           <button onClick={()=>buildApp()} className="w-full mt-3 bg-white text-black py-4 rounded-full font-black text-sm">{loading?'Building...':'Generate App →'}</button>
           <div className="grid grid-cols-2 gap-2 mt-6">{EXAMPLES.map(ex=><button key={ex.t} onClick={()=>buildApp(ex.p)} className="border border-zinc-800 hover:bg-zinc-900 p-3 rounded-xl text-left"><div className="font-bold text-[12px]">{ex.t}</div></button>)}</div>
-          {code && (
-            <div className="mt-6 p-4 bg-zinc-900 rounded-2xl border border-zinc-800">
-              <p className="text-[11px] text-zinc-400">Publish steps for VTU Wallet:</p>
-              <ol className="text-[11px] mt-2 list-decimal ml-4 space-y-1 text-zinc-300">
-                <li>Tap Publish → new tab opens</li>
-                <li>Share new tab link to customers</li>
-                <li>Or Download HTML → host on Vercel</li>
-              </ol>
-            </div>
-          )}
         </div>
         <div className="bg-white flex flex-col h-[92vh]">
           <div className="p-3 border-b bg-black text-white flex justify-between items-center">
@@ -123,4 +127,4 @@ export default function App(){
       </div>
     </div>
   )
-}
+          }
