@@ -1,5 +1,5 @@
 'use client'
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { SandpackProvider, SandpackPreview } from '@codesandbox/sandpack-react'
 
 const EXAMPLES = [
@@ -12,17 +12,22 @@ const EXAMPLES = [
 ]
 
 function cleanCode(raw: string){
+  // If backend sent JSON error, don't try to render it
+  if(raw.trim().startsWith('{') && raw.includes('error')){
+    try{ const j=JSON.parse(raw); throw new Error(j.error) }catch{}
+  }
   return raw.replace(/```[a-z]*\n?/gi,'').replace(/```/g,'').trim()
 }
 
 function cleanForPublish(c: string){
   return c
-   .replace(/: any/g,'')
-   .replace(/: number/g,'')
-   .replace(/: string/g,'')
-   .replace(/: boolean/g,'')
+   .replace(/:\s*any/g,'')
+   .replace(/:\s*number/g,'')
+   .replace(/:\s*string/g,'')
+   .replace(/:\s*boolean/g,'')
    .replace(/export default function App/,'function App')
-   .replace(/import.*from.*react.*;\n?/gi,'')
+   .replace(/import\s+React.*from.*['"]react['"];?\n?/gi,'')
+   .replace(/import\s+\{[^}]+\}\s+from\s+['"]react['"];?\n?/gi,'')
 }
 
 export default function Home(){
@@ -30,13 +35,21 @@ export default function Home(){
   const [code,setCode]=useState('')
   const [loading,setLoading]=useState(false)
   const [published,setPublished]=useState(false)
+  const [errorMsg,setErrorMsg]=useState('')
+  const previewRef = useRef<HTMLDivElement>(null)
 
   async function buildApp(q?:string){
     const finalQ = q || prompt
     if(!finalQ) return
-    setLoading(true); setCode(''); setPublished(false)
+    setLoading(true); setCode(''); setPublished(false); setErrorMsg('')
     try{
       const res = await fetch('/api/generate',{method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({prompt: finalQ})})
+      
+      if(!res.ok){
+        const data = await res.json().catch(async ()=>({error: await res.text()}))
+        throw new Error(data.error || `API failed: ${res.status}`)
+      }
+
       if(!res.body) throw new Error('No stream')
       const reader = res.body.getReader()
       const decoder = new TextDecoder()
@@ -45,17 +58,33 @@ export default function Home(){
         const {done,value} = await reader.read()
         if(done) break
         full += decoder.decode(value)
-        setCode(cleanCode(full))
+        const cleaned = cleanCode(full)
+        // Don't set error text as code
+        if(!cleaned.startsWith('Error:') && !cleaned.startsWith('{"error"')){
+          setCode(cleaned)
+        }
       }
-    }catch(e){
+      // Auto scroll to preview on mobile
+      setTimeout(()=> previewRef.current?.scrollIntoView({behavior:'smooth'}), 500)
+
+    }catch(e:any){
+      const msg = e.message || 'Unknown error'
+      setErrorMsg(msg)
+      // Show helpful error UI, not broken JS
       setCode(`import React, { useState } from 'react';
 export default function App(){
- const [cart,setCart] = useState(0);
- return <div style={{padding:20,fontFamily:'sans-serif',background:'#f8f8f8',minHeight:'100vh'}}>
- <div style={{background:'black',color:'white',padding:16,borderRadius:16,display:'flex',justifyContent:'space-between'}}><b>EMMA STORE - BODIJA</b><span>Cart: {cart}</span></div>
- <h1 style={{fontSize:28,fontWeight:900,marginTop:20}}>POS Ready</h1>
- <p>Built by Emma AI Builder - Ibadan ✓</p>
- <button onClick={()=>setCart(cart+1)} style={{background:'black',color:'white',padding:'14px 28px',borderRadius:24,marginTop:20,fontWeight:900}}>Add to Cart +</button>
+ return <div style={{padding:24,fontFamily:'system-ui',background:'#fff0f0',minHeight:'100vh'}}>
+  <div style={{background:'white',border:'1px solid #ffcccc',padding:20,borderRadius:16}}>
+    <h1 style={{fontSize:20,fontWeight:900,color:'#b91c1c'}}>⚠️ Build Failed</h1>
+    <p style={{marginTop:8,fontSize:13,color:'#333',wordBreak:'break-all'}}>${msg.replace(/</g,'')}</p>
+    <div style={{marginTop:16,background:'#f8f8f8',padding:12,borderRadius:12,fontSize:12}}>
+      <b>Fix:</b><br/>
+      1. Go to Vercel → Settings → Environment Variables<br/>
+      2. Check GROQ_API_KEY exists and starts with gsk_<br/>
+      3. Delete old key, add new one from groq.com<br/>
+      4. Redeploy in Vercel → Deployments → Redeploy
+    </div>
+  </div>
  </div>
 }`)
     }
@@ -63,11 +92,11 @@ export default function App(){
   }
 
   function handleDownload(){
-    if(!code) return alert('Build an app first!')
+    if(!code || code.includes('Build Failed')) return alert('Build an app first!')
     const clean = cleanForPublish(code)
-    const html = `<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Emma App</title><script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script><script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script><script src="https://unpkg.com/@babel/standalone/babel.min.js"></script><style>body{margin:0}</style></head><body><div id="root"></div><div id="err" style="padding:20px;color:red"></div><script type="text/babel" data-presets="react">
+    const html = `<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Emma App</title><script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script><script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script><script src="https://unpkg.com/@babel/standalone/babel.min.js"></script><style>body{margin:0}</style></head><body><div id="root"></div><script type="text/babel" data-presets="react">
 ${clean}
-try{const root=ReactDOM.createRoot(document.getElementById('root'));root.render(React.createElement(App));}catch(e){document.getElementById('err').innerText='Error: '+e.message}
+try{const root=ReactDOM.createRoot(document.getElementById('root'));root.render(React.createElement(App));}catch(e){document.body.innerHTML='<div style=padding:20;color:red>Error: '+e.message+'</div>'}
 <\/script></body></html>`
     const blob = new Blob([html], {type:'text/html'})
     const url = URL.createObjectURL(blob)
@@ -76,7 +105,7 @@ try{const root=ReactDOM.createRoot(document.getElementById('root'));root.render(
   }
 
   async function handlePublish(){
-    if(!code) return alert('Build an app first!')
+    if(!code || code.includes('Build Failed')) return alert('Build a working app first!')
     const clean = cleanForPublish(code)
     const win = window.open('','_blank')
     if(win){
@@ -96,28 +125,29 @@ const root=ReactDOM.createRoot(document.getElementById('root'));root.render(Reac
         <a href="/admin" className="text-xs border border-zinc-800 px-3 py-1.5 rounded-full">Admin • Earnings</a>
       </nav>
       <div className="max-w-[1600px] mx-auto grid lg:grid-cols-[420px_1fr] gap-0">
-        <div className="p-6 border-r border-zinc-900 h-[92vh] overflow-auto flex flex-col">
+        <div className="p-6 border-r border-zinc-900 lg:h-[92vh] overflow-auto flex flex-col">
           <h2 className="text-[42px] font-black leading-[0.9] tracking-tighter">What do you want to build today?</h2>
           <p className="text-zinc-500 text-[13px] mt-3">Build POS, Church, School, VTU, Banking apps instantly.</p>
-          <textarea value={prompt} onChange={e=>setPrompt(e.target.value)} placeholder="Build me a POS app..." className="w-full mt-6 bg-zinc-900 border border-zinc-800 rounded-2xl p-4 h-28 text-sm outline-none focus:border-white"/>
-          <button onClick={()=>buildApp()} className="w-full mt-3 bg-white text-black py-4 rounded-full font-black text-sm">{loading?'Building...':'Generate App →'}</button>
+          <textarea value={prompt} onChange={e=>setPrompt(e.target.value)} placeholder="Build me a POS app for Bodija..." className="w-full mt-6 bg-zinc-900 border border-zinc-800 rounded-2xl p-4 h-28 text-sm outline-none focus:border-white"/>
+          <button onClick={()=>buildApp()} className="w-full mt-3 bg-white text-black py-4 rounded-full font-black text-sm disabled:opacity-50" disabled={loading}>{loading?'Building... (10s)':'Generate App →'}</button>
+          {errorMsg && <div className="mt-3 bg-red-950 border border-red-800 p-3 rounded-xl text-[11px] text-red-300">{errorMsg}</div>}
           <div className="grid grid-cols-2 gap-2 mt-6">{EXAMPLES.map(ex=><button key={ex.t} onClick={()=>buildApp(ex.p)} className="border border-zinc-800 hover:bg-zinc-900 p-3 rounded-xl text-left"><div className="font-bold text-[12px]">{ex.t}</div></button>)}</div>
         </div>
-        <div className="bg-white flex flex-col h-[92vh]">
+        <div ref={previewRef} className="bg-white flex flex-col h-[92vh]">
           <div className="p-3 border-b bg-black text-white flex justify-between items-center">
             <span className="text-xs font-bold">⚡ Live Preview</span>
             <div className="flex gap-2 items-center">
-              {code && <>
+              {code && !code.includes('Build Failed') && <>
                 <button onClick={handleDownload} className="text-[11px] bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 px-3 py-1.5 rounded-full font-bold">⬇ Download HTML</button>
                 <button onClick={handlePublish} className="text-[11px] bg-white text-black px-4 py-1.5 rounded-full font-black">{published?'✅ Published':'🚀 Publish'}</button>
               </>}
-              <span className="text-[9px] bg-green-400 text-black px-2 py-1 rounded-full ml-1">{loading?'BUILDING':'LIVE'}</span>
+              <span className={`text-[9px] px-2 py-1 rounded-full ml-1 ${loading?'bg-yellow-400 text-black':'bg-green-400 text-black'}`}>{loading?'BUILDING':'LIVE'}</span>
             </div>
           </div>
           <div className="flex-1 overflow-hidden">
             {code? (
               <SandpackProvider template="react" files={{'/App.js': code}} style={{height:'100%'}}>
-                <SandpackPreview style={{height:'100%'}} showNavigator={false} showOpenInCodeSandbox={false} showRefreshButton={false} />
+                <SandpackPreview style={{height:'100%'}} showNavigator={false} showOpenInCodeSandbox={false} showRefreshButton={true} />
               </SandpackProvider>
             ) : (
               <div className="h-full flex flex-col items-center justify-center text-black p-10 text-center"><div className="text-6xl">🚀</div><h3 className="font-black mt-4 text-xl">Your app appears here</h3><p className="text-zinc-500 text-sm mt-2">Build VTU Wallet then tap Publish</p></div>
@@ -127,4 +157,4 @@ const root=ReactDOM.createRoot(document.getElementById('root'));root.render(Reac
       </div>
     </div>
   )
-          }
+  }
