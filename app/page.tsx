@@ -3,16 +3,15 @@ import { useState, useRef } from 'react'
 import { SandpackProvider, SandpackPreview } from '@codesandbox/sandpack-react'
 
 const EXAMPLES = [
-  {t:'POS App for My Shop', p:'Build a complete POS app for a shop in Bodija Ibadan with product inventory, barcode search, cart, sales history, print receipt with logo, daily profit dashboard, ₦ currency. Use localStorage. Modern black UI.'},
-  {t:'Church App', p:'Build church management app for RCCG Ibadan with member directory 300+ members, attendance marking with date, donation tracking ₦, events calendar, announcement banner. Full working app.'},
-  {t:'School Result App', p:'Build school result checker app like WAEC portal with student list, enter scores for 6 subjects, auto-calculate total, average, grade A-F, position, remarks, print result sheet with school logo.'},
-  {t:'VTU / Data App', p:'Build VTU app where users buy airtime, data bundles (MTN, Glo, Airtel, 9mobile), enter phone number, select bundle, pay from wallet balance ₦50,000, show transaction history, Paystack mock.'},
-  {t:'PayVault Banking Clone', p:'Build banking app clone like PayVault/Opay/Kuda with dashboard showing balance ₦500,000, account number, send money to bank, transaction history list, cards section, add money via Paystack, analytics chart.'},
-  {t:'E-commerce Store', p:'Build e-commerce store for Bodija market Ibadan with product grid, search, categories, cart, wishlist, checkout via WhatsApp, ₦ prices, delivery fee.'},
+  {t:'POS App for My Shop', p:'Build a complete POS app for a shop in Bodija Ibadan with product inventory, barcode search, cart, sales history, print receipt with logo, daily profit dashboard, ₦ currency. Use localStorage. Modern black UI. 300+ lines.'},
+  {t:'Church App', p:'Build church management app for RCCG Ibadan with member directory 300+ members, attendance marking with date, donation tracking ₦, events calendar, announcement banner. Full working app 300+ lines.'},
+  {t:'School Result App', p:'Build school result checker app like WAEC portal with student list, enter scores for 6 subjects, auto-calculate total, average, grade A-F, position, remarks, print result sheet with school logo. 300+ lines.'},
+  {t:'VTU / Data App', p:'Build VTU app where users buy airtime, data bundles (MTN, Glo, Airtel, 9mobile), enter phone number, select bundle, pay from wallet balance ₦50,000, show transaction history, Paystack mock. Working with modals.'},
+  {t:'PayVault Banking Clone', p:'Build premium banking app clone like Opay with dashboard balance ₦500,000 hide/show, account 1234567890, Add Money modal adds balance, Send Money modal validates and deducts, Balance Analytics 5 bars, Recent Transactions map from localStorage, My Cards, bottom nav Home/Transactions/Cards/Profile tabs, black premium UI.'},
+  {t:'E-commerce Store', p:'Build e-commerce store for Bodija market Ibadan with product grid, search, categories, cart, wishlist, checkout via WhatsApp, ₦ prices, delivery fee. 300+ lines.'},
 ]
 
 function cleanCode(raw: string){
-  // If backend sent JSON error, don't try to render it
   if(raw.trim().startsWith('{') && raw.includes('error')){
     try{ const j=JSON.parse(raw); throw new Error(j.error) }catch{}
   }
@@ -44,12 +43,10 @@ export default function Home(){
     setLoading(true); setCode(''); setPublished(false); setErrorMsg('')
     try{
       const res = await fetch('/api/generate',{method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({prompt: finalQ})})
-      
       if(!res.ok){
         const data = await res.json().catch(async ()=>({error: await res.text()}))
         throw new Error(data.error || `API failed: ${res.status}`)
       }
-
       if(!res.body) throw new Error('No stream')
       const reader = res.body.getReader()
       const decoder = new TextDecoder()
@@ -59,19 +56,15 @@ export default function Home(){
         if(done) break
         full += decoder.decode(value)
         const cleaned = cleanCode(full)
-        // Don't set error text as code
         if(!cleaned.startsWith('Error:') && !cleaned.startsWith('{"error"')){
           setCode(cleaned)
         }
       }
-      // Auto scroll to preview on mobile
       setTimeout(()=> previewRef.current?.scrollIntoView({behavior:'smooth'}), 500)
-
     }catch(e:any){
       const msg = e.message || 'Unknown error'
       setErrorMsg(msg)
-      // Show helpful error UI, not broken JS
-      setCode(`import React, { useState } from 'react';
+      setCode(`import React from 'react';
 export default function App(){
  return <div style={{padding:24,fontFamily:'system-ui',background:'#fff0f0',minHeight:'100vh'}}>
   <div style={{background:'white',border:'1px solid #ffcccc',padding:20,borderRadius:16}}>
@@ -79,10 +72,9 @@ export default function App(){
     <p style={{marginTop:8,fontSize:13,color:'#333',wordBreak:'break-all'}}>${msg.replace(/</g,'')}</p>
     <div style={{marginTop:16,background:'#f8f8f8',padding:12,borderRadius:12,fontSize:12}}>
       <b>Fix:</b><br/>
-      1. Go to Vercel → Settings → Environment Variables<br/>
-      2. Check GROQ_API_KEY exists and starts with gsk_<br/>
-      3. Delete old key, add new one from groq.com<br/>
-      4. Redeploy in Vercel → Deployments → Redeploy
+      1. Vercel → Settings → Environment Variables<br/>
+      2. Check GROQ_API_KEY starts with gsk_<br/>
+      3. Redeploy
     </div>
   </div>
  </div>
@@ -94,7 +86,7 @@ export default function App(){
   function handleDownload(){
     if(!code || code.includes('Build Failed')) return alert('Build an app first!')
     const clean = cleanForPublish(code)
-    const html = `<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Emma App</title><script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script><script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script><script src="https://unpkg.com/@babel/standalone/babel.min.js"></script><style>body{margin:0}</style></head><body><div id="root"></div><script type="text/babel" data-presets="react">
+    const html = `<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Emma App</title><script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script><script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script><script src="https://unpkg.com/@babel/standalone/babel.min.js"></script><style>body{margin:0;background:#000}</style></head><body><div id="root"></div><script type="text/babel" data-presets="react">
 ${clean}
 try{const root=ReactDOM.createRoot(document.getElementById('root'));root.render(React.createElement(App));}catch(e){document.body.innerHTML='<div style=padding:20;color:red>Error: '+e.message+'</div>'}
 <\/script></body></html>`
@@ -102,20 +94,22 @@ try{const root=ReactDOM.createRoot(document.getElementById('root'));root.render(
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
     a.href=url; a.download=`emma-app-${Date.now()}.html`; a.click()
+    setTimeout(()=>URL.revokeObjectURL(url), 5000)
   }
 
-  async function handlePublish(){
+  function handlePublish(){
     if(!code || code.includes('Build Failed')) return alert('Build a working app first!')
     const clean = cleanForPublish(code)
-    const win = window.open('','_blank')
-    if(win){
-      win.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Published - Emma AI</title><script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script><script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script><script src="https://unpkg.com/@babel/standalone/babel.min.js"></script><style>body{margin:0}</style></head><body><div id="root"></div><script type="text/babel" data-presets="react">
+    // FIX: Use Blob URL not about:blank - fixes your screenshot bug
+    const html = `<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Published - Emma AI</title><script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script><script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script><script src="https://unpkg.com/@babel/standalone/babel.min.js"></script><style>body{margin:0;background:#000}</style></head><body><div id="root"></div><script type="text/babel" data-presets="react">
 ${clean}
 const root=ReactDOM.createRoot(document.getElementById('root'));root.render(React.createElement(App));
-<\/script><div style="position:fixed;bottom:10px;right:10px;background:black;color:white;padding:6px 10px;border-radius:20px;font-size:10px;font-family:sans-serif">Published by EMMA AI BUILDER • Ibadan</div></body></html>`)
-      win.document.close()
-    }
+<\/script><div style="position:fixed;bottom:12px;right:12px;background:black;color:white;padding:8px 14px;border-radius:20px;font-size:11px;font-family:sans-serif;border:1px solid #333;z-index:9999">Published by EMMA AI BUILDER • Ibadan</div></body></html>`
+    const blob = new Blob([html], {type:'text/html'})
+    const url = URL.createObjectURL(blob)
+    window.open(url, '_blank')
     setPublished(true)
+    setTimeout(()=>URL.revokeObjectURL(url), 60000)
   }
 
   return(
@@ -157,4 +151,4 @@ const root=ReactDOM.createRoot(document.getElementById('root'));root.render(Reac
       </div>
     </div>
   )
-  }
+    }
