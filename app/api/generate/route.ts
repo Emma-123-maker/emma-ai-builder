@@ -4,23 +4,14 @@ export const runtime = 'edge'
 export async function POST(req: Request){
   const { prompt } = await req.json()
   
-  const system = `You are Bolt.new AI builder. Build a FULL WORKING React app for: ${prompt}
-
-YOU MUST START WITH EXACTLY THIS - COPY PASTE:
+  // SHORT prompt = under 8000 tokens
+  const system = `Build React app: ${prompt}. Start with:
 import React, { useState, useEffect } from 'react';
 
 export default function App(){
-  const [balance, setBalance] = useState(50000);
-  // ...rest of app
-
-RULES:
-- First 2 lines MUST be exactly as above
-- NEVER start with "variables" or any other word
-- NO markdown, NO \`\`\`, only raw code
-- Black premium UI, ₦ Naira, localStorage
-- >200 lines, fully functional
-
-Build: ${prompt}`
+// app code with useState, balance, ₦, localStorage, black UI, >150 lines
+}
+Rules: raw JS only, no TS, no markdown.`
 
   try{
     const groq = new OpenAI({ 
@@ -28,47 +19,34 @@ Build: ${prompt}`
       baseURL: 'https://api.groq.com/openai/v1' 
     })
 
-    // Non-streaming = more stable, no broken imports
     const res = await groq.chat.completions.create({
       model: "openai/gpt-oss-20b",
       messages: [
-        {role:'system',content: system},
-        {role:'user',content: `Build: ${prompt}` }
+        {role:'system', content: system},
+        {role:'user', content: prompt }
       ],
       temperature: 0.7,
-      max_tokens: 8000
+      max_tokens: 6000
     })
 
     let code = res.choices[0]?.message?.content || ''
-    
-    // CLEAN
     code = code.replace(/```[a-z]*\n?/gi,'').replace(/```/g,'').trim()
     
-    // If model forgot import (like your screenshot), force it
-    if(!code.trim().startsWith('import')){
-      // Remove any stray first word like "variables"
-      code = code.replace(/^variables[\s\S]*?const \[/, 'const [')
+    // Auto-fix common errors from your screenshots
+    if(!code.startsWith('import')){
+      code = code.replace(/^variables.*?\n/i, '')
+      code = `import React, { useState, useEffect } from 'react';\n\n${code}`
+    }
+    code = code.replace(/export default function App\s*\{/, 'export default function App(){')
+    code = code.replace(/';export/, `';\n\nexport`)
+    
+    // Ensure import is perfect
+    if(!code.includes("from 'react'")){
       code = `import React, { useState, useEffect } from 'react';\n\n` + code
     }
-    
-    // Ensure export App() has ()
-    code = code.replace(/export default function App\s*\{/, 'export default function App(){')
-    code = code.replace(/export default function App\s*\(\)\s*\{/, 'export default function App(){')
-    
-    // If still starts with variables, kill it
-    if(code.trim().toLowerCase().startsWith('variables')){
-      code = code.replace(/^.*\n/, '')
-      code = `import React, { useState, useEffect } from 'react';\n\nexport default function App(){\n` + code
-    }
 
-    return new Response(code, {
-      headers: { 'Content-Type': 'text/plain' }
-    })
-
+    return new Response(code, { headers: { 'Content-Type': 'text/plain' } })
   }catch(e:any){
-    return new Response(JSON.stringify({error: e.message}), {
-      status: 500,
-      headers: {'Content-Type':'application/json'}
-    })
+    return new Response(JSON.stringify({error: e.message}), { status: 500 })
   }
 }
