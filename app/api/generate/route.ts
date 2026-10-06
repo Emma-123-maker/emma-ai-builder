@@ -1,62 +1,74 @@
 import OpenAI from 'openai'
 export const runtime = 'edge'
 
-function clean(s:string){
-  let c = s.replace(/```[a-z]*\n?/gi,'').replace(/```/g,'').trim()
-  // Force newline after import
-  c = c.replace(/from\s+['"]react['"]\s*;?\s*export/g, `from 'react';\n\nexport`)
-  c = c.replace(/from\s+['"]react['"]\s*export/g, `from 'react';\n\nexport`)
-  // Force App() with parens
-  c = c.replace(/export default function App\s*\(\)\s*\{/, `export default function App(){`)
-  c = c.replace(/export default function App\s*\{/, `export default function App(){`)
-  c = c.replace(/export default function App\s*\n/, `export default function App(){\n`)
-  c = c.replace(/export default function App$/, `export default function App(){`)
-  // Ensure first line perfect
-  if(!c.startsWith('import React')){
-    c = `import React, { useState, useEffect } from 'react';\n\n` + c.replace(/^import.*react.*\n?/i,'').trim()
-  }
-  // If still stuck together, split
-  c = c.replace(/';export/, `';\n\nexport`)
-  return c
-}
-
 export async function POST(req: Request){
   const { prompt } = await req.json()
-  const system = `You MUST output code starting EXACTLY like this, character for character, with newline:
+  
+  const system = `You are Bolt.new AI builder. Build a FULL WORKING React app for: ${prompt}
+
+YOU MUST START WITH EXACTLY THIS - COPY PASTE:
 import React, { useState, useEffect } from 'react';
 
 export default function App(){
-...rest
+  const [balance, setBalance] = useState(50000);
+  // ...rest of app
 
-RULES: NO markdown. NO backticks. Keep import on line 1 alone. Line 3 MUST be export default function App(){ with (). Then build: ${prompt} - Black premium UI, ₦, localStorage, full app >200 lines`
+RULES:
+- First 2 lines MUST be exactly as above
+- NEVER start with "variables" or any other word
+- NO markdown, NO \`\`\`, only raw code
+- Black premium UI, ₦ Naira, localStorage
+- >200 lines, fully functional
 
-  const groq = new OpenAI({ apiKey: process.env.GROQ_API_KEY, baseURL: 'https://api.groq.com/openai/v1' })
+Build: ${prompt}`
+
   try{
-    const stream = await groq.chat.completions.create({
+    const groq = new OpenAI({ 
+      apiKey: process.env.GROQ_API_KEY, 
+      baseURL: 'https://api.groq.com/openai/v1' 
+    })
+
+    // Non-streaming = more stable, no broken imports
+    const res = await groq.chat.completions.create({
       model: "openai/gpt-oss-20b",
-      stream: true,
-      messages: [{role:'system',content:system},{role:'user',content:prompt}],
-      temperature: 0.6,
+      messages: [
+        {role:'system',content: system},
+        {role:'user',content: `Build: ${prompt}` }
+      ],
+      temperature: 0.7,
       max_tokens: 8000
     })
-    const enc = new TextEncoder()
-    let buffer = ''
-    return new Response(new ReadableStream({
-      async start(ctrl){
-        for await (const ch of stream){
-          let t = ch.choices[0]?.delta?.content||''
-          if(!t) continue
-          buffer += t
-          let out = clean(t)
-          // Don't send broken partials on first chunk
-          if(buffer.length < 100) continue
-          let cleanedChunk = t.replace(/```[a-z]*\n?/gi,'').replace(/```/g,'')
-          if(cleanedChunk) ctrl.enqueue(enc.encode(cleanedChunk))
-        }
-        ctrl.close()
-      }
-    }), {headers:{'Content-Type':'text/plain'}})
+
+    let code = res.choices[0]?.message?.content || ''
+    
+    // CLEAN
+    code = code.replace(/```[a-z]*\n?/gi,'').replace(/```/g,'').trim()
+    
+    // If model forgot import (like your screenshot), force it
+    if(!code.trim().startsWith('import')){
+      // Remove any stray first word like "variables"
+      code = code.replace(/^variables[\s\S]*?const \[/, 'const [')
+      code = `import React, { useState, useEffect } from 'react';\n\n` + code
+    }
+    
+    // Ensure export App() has ()
+    code = code.replace(/export default function App\s*\{/, 'export default function App(){')
+    code = code.replace(/export default function App\s*\(\)\s*\{/, 'export default function App(){')
+    
+    // If still starts with variables, kill it
+    if(code.trim().toLowerCase().startsWith('variables')){
+      code = code.replace(/^.*\n/, '')
+      code = `import React, { useState, useEffect } from 'react';\n\nexport default function App(){\n` + code
+    }
+
+    return new Response(code, {
+      headers: { 'Content-Type': 'text/plain' }
+    })
+
   }catch(e:any){
-    return new Response(JSON.stringify({error:e.message}), {status:500})
+    return new Response(JSON.stringify({error: e.message}), {
+      status: 500,
+      headers: {'Content-Type':'application/json'}
+    })
   }
 }
